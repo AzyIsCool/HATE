@@ -19,6 +19,7 @@ namespace HATE.GTK
             _app = new App(false);
             MessageBoxTask();
             LoadWindow(_app);
+
             Gtk.Application.Run();
         }
 
@@ -56,20 +57,24 @@ namespace HATE.GTK
                 {
                     while (!App.NeedMessageBox)
                     {
-                        await Task.Delay(250);
+                        await Task.Delay(10);
                     }
                     if (_messageBox == null)
                     {
                         _messageBox = new App(true);
                     }
+                    //Gtk.Dialog dialog = new Gtk.Dialog("thing", null, Gtk.DialogFlags.Modal, "Ok"z);
+                    //dialog.VBox.Add(new Gtk.Label(MessageBox._Message));
+                    //dialog.ShowAll();
+                    //dialog.DeleteEvent += Dialog_DeleteEvent;
 
                     formsWindow = await LoadWindow(_messageBox, 585, 150);
-                    formsWindow.Show();
+                    formsWindow.ShowAll();
                     if (!string.IsNullOrWhiteSpace(MessageBox._Title))
                         formsWindow.SetApplicationTitle(MessageBox._Title);
                     while (App.NeedMessageBox)
                     {
-                        await Task.Delay(250);
+                        await Task.Delay(10);
                     }
                     formsWindow.Destroy();
                     formsWindow = null;
@@ -81,5 +86,13 @@ namespace HATE.GTK
                 }
             }
         }
+
+        //private static void Dialog_DeleteEvent(object o, Gtk.DeleteEventArgs args)
+        //{
+        //    App.NeedMessageBox = false;
+        //    ((Gtk.Dialog)o).Destroy();
+        //    ((Gtk.Dialog)o).DeleteEvent -= Dialog_DeleteEvent;
+        //    o = null;
+        //}
     }
 }

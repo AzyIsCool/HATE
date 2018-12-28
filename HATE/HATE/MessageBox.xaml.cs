@@ -56,10 +56,31 @@ namespace HATE
                 butNo.IsVisible = true;
                 butCancel.IsVisible = true;
             }
-            //if ((int)_Icon == 64)
-            //{
-            //    imgIcon.Source = ImageSource.FromFile("Assets/alert-circle-outline.png");
-            //}
+            if ((int)_Icon == 0 | (int)_Icon == 16)
+            {
+                ImageAndMessageGrid.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Absolute);
+            }
+            else
+            {
+                ImageAndMessageGrid.ColumnDefinitions[0].Width = new GridLength(60, GridUnitType.Absolute);
+            }
+
+            if ((int)_Icon == 64)
+            {
+                imgIcon.Source = ImageSource.FromFile("Images/information-outline.png");
+            }
+            else if ((int)_Icon == 48)
+            {
+                imgIcon.Source = ImageSource.FromFile("Images/alert.png");
+            }
+            else if ((int)_Icon == 16)
+            {
+                imgIcon.Source = ImageSource.FromFile("Images/alert-circle-outline.png");
+            }
+            else if ((int)_Icon == 32)
+            {
+                imgIcon.Source = ImageSource.FromFile("Images/information-outline.png");
+            }
             _MessageBox = this;
         }
 
@@ -141,13 +162,13 @@ namespace HATE
         public enum MessageIcon 
         {
             Asterisk = 64,
-            Error = 16,
-            Exclamation = 48,
-            Hand = 16,
-            Information = 64,
+            Error = 16, 
+            Exclamation = 48, 
+            Hand = 16, //Not going to get a icon for this, you 
+            Information = 64, 
             None = 0,
-            Question = 32,
-            Stop = 16,
+            Question = 32, 
+            Stop = 16, 
             Warning = 48
         }
 

@@ -12,5 +12,8 @@ Interested?
 
 All instructions are inside the README file in the download.
 
+# Building
+
+You will need [GTK# for .NET](https://www.mono-project.com/download/stable/), .NET (duh) and mono in order to build
 
 

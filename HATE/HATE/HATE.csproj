@@ -15,11 +15,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\alert-circle-outline.png" />
+    <None Remove="Images\alert-circle-outline.png" />
+    <None Remove="Images\alert.png" />
+    <None Remove="Images\information-outline.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\alert-circle-outline.png" />
+    <Content Include="Images\alert-circle-outline.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\alert.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\information-outline.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
