@@ -88,7 +88,7 @@ namespace HATE
 
         public async Task GetWindowSize()
         {
-            await Task.Delay(250);
+            await Task.Delay(500);
             _MessageHeight = Buttons.Height + (labMessage.Height >= imgIcon.Height ? labMessage.Height : imgIcon.Height) + 40;
             _MessageHeight = Math.Round(_MessageHeight);
         }

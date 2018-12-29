@@ -60,13 +60,9 @@ namespace HATE
             {
                 labGameName.Text = GetGame().Replace(".exe", "");
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
-                {
                     Logger.Log(MessageType.Warning, $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main._dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", true);
-                }
                 else
-                {
                     Logger.Log(MessageType.Warning, "We couldn't find any game in this folder, check that this is in the right folder.");
-                }
             }
 
             _random = new Random();
@@ -282,25 +278,32 @@ namespace HATE
                 if (!Safe.CopyFile(Main._dataWin, Path.Combine($"Data", Main._dataWin))) { return false; }
                 if (labGameName.Text == "Deltarune")
                 {
-                    if (!Safe.CopyFile("./lang/lang_en.json", "./Data/lang_en.json")) { return false; };
-                    if (!Safe.CopyFile("./lang/lang_ja.json", "./Data/lang_ja.json")) { return false; };
+                    if (!Safe.CreateDirectory("Data/lang")) { return false; }
+                    if (!Safe.CopyFile("./lang/lang_en.json", "./Data/lang/lang_en.json")) { return false; };
+                    if (!Safe.CopyFile("./lang/lang_ja.json", "./Data/lang/lang_ja.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
 
             if (!Safe.DeleteFile(Main._dataWin)) { return false; }
             _logWriter.WriteLine($"Deleted {Main._dataWin}.");
-            if (!Safe.DeleteFile("./lang/lang_en.json")) { return false; }
-            _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
-            if (!Safe.DeleteFile("./lang/lang_ja.json")) { return false; }
-            _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
+            if (labGameName.Text == "Deltarune")
+            {
+                if (!Safe.DeleteFile("./lang/lang_en.json")) { return false; }
+                _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
+                if (!Safe.DeleteFile("./lang/lang_ja.json")) { return false; }
+                _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
+            }
 
             if (!Safe.CopyFile($"Data/{Main._dataWin}", Main._dataWin)) { return false; }
             _logWriter.WriteLine($"Copied {Main._dataWin}.");
-            if (!Safe.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
-            _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-            if (!Safe.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
-            _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
+            if (labGameName.Text == "Deltarune")
+            {
+                if (!Safe.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
+                _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
+                if (!Safe.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
+                _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
+            }
 
             return true;
         }

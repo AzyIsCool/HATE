@@ -83,7 +83,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Label HorizontalOptions="Center" Text="Seed:" FontSize="10.25" Margin="0"/>
-                <Entry Grid.Column="1" HeightRequest="20" FontSize="8.25" FontFamily="Microsoft Sans Serif" FontAttributes="Bold" Margin="0" x:Name="txtSeed"/>
+                <Entry Grid.Column="1" HeightRequest="20" FontSize="8.25" FontFamily="Microsoft Sans Serif" FontAttributes="Bold" Margin="0" x:Name="txtSeed" Text=""/>
                 <Label HorizontalOptions="Center" Text="Power:" Grid.Row="1" FontSize="10.25" Margin="0"/>
                 <Entry Grid.Row="1" Grid.Column="1" Placeholder="0 - 255" HeightRequest="20" FontAttributes="Bold" FontFamily="Microsoft Sans Serif" FontSize="8.25" Margin="0" x:Name="txtPower"/>
             </Grid>

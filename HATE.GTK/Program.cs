@@ -71,7 +71,7 @@ namespace HATE.GTK
                     if (formsWindow == null)
                         formsWindow = await LoadWindow(_messageBox, 585, 135);
 
-                    await Task.Delay(250);
+                    await Task.Delay(500);
                     formsWindow.SetSizeRequest(585, (int)MessageBox._MessageHeight);
                     formsWindow.ShowAll();
                     if (!string.IsNullOrWhiteSpace(MessageBox._Title))
