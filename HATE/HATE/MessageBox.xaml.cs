@@ -15,6 +15,7 @@ namespace HATE
         public static string _Message { get; set; }
         public MessageResult Result { get; set; }
         public static MessageBox _MessageBox { get; set; }
+        public static double _MessageHeight { get; set; }
 
         public MessageBox()
         {
@@ -81,7 +82,15 @@ namespace HATE
             {
                 imgIcon.Source = ImageSource.FromFile("Images/information-outline.png");
             }
+            Task.Run(() => GetWindowSize());
             _MessageBox = this;
+        }
+
+        public async Task GetWindowSize()
+        {
+            await Task.Delay(250);
+            _MessageHeight = Buttons.Height + (labMessage.Height >= imgIcon.Height ? labMessage.Height : imgIcon.Height) + 40;
+            _MessageHeight = Math.Round(_MessageHeight);
         }
 
         public async Task _Show(string Message, MessageButton MessageButton, MessageIcon MessageIcon, string Title) 
@@ -94,7 +103,7 @@ namespace HATE
             App.NeedMessageBox = true;
             while (App.NeedMessageBox)
             {
-                await Task.Delay(250);
+                await Task.Delay(10);
             }
         }
 

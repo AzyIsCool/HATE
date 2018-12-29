@@ -50,9 +50,9 @@ namespace HATE.GTK
 
         public static async Task MessageBoxTask()
         {
+            FormsWindow formsWindow = null;
             while (true)
             {
-                FormsWindow formsWindow = null;
                 try
                 {
                     while (!App.NeedMessageBox)
@@ -63,21 +63,25 @@ namespace HATE.GTK
                     {
                         _messageBox = new App(true);
                     }
-                    //Gtk.Dialog dialog = new Gtk.Dialog("thing", null, Gtk.DialogFlags.Modal, "Ok"z);
+                    //Gtk.Dialog dialog = new Gtk.Dialog("thing", null, Gtk.DialogFlags.Modal, "Ok");
                     //dialog.VBox.Add(new Gtk.Label(MessageBox._Message));
                     //dialog.ShowAll();
                     //dialog.DeleteEvent += Dialog_DeleteEvent;
 
-                    formsWindow = await LoadWindow(_messageBox, 585, 150);
+                    if (formsWindow == null)
+                        formsWindow = await LoadWindow(_messageBox, 585, 135);
+
+                    await Task.Delay(250);
+                    formsWindow.SetSizeRequest(585, (int)MessageBox._MessageHeight);
                     formsWindow.ShowAll();
                     if (!string.IsNullOrWhiteSpace(MessageBox._Title))
                         formsWindow.SetApplicationTitle(MessageBox._Title);
+
                     while (App.NeedMessageBox)
                     {
                         await Task.Delay(10);
                     }
-                    formsWindow.Destroy();
-                    formsWindow = null;
+                    formsWindow.Hide();
                 }
                 catch
                 {
