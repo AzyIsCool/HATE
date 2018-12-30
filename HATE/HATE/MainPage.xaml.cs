@@ -54,11 +54,11 @@ namespace HATE
                     Main._dataWin = "game.unx";
             }
 
-            if (File.Exists("DELTARUNE.exe") || File.Exists("../../SURVEY_PROGRAM.app")) { labGameName.Text = "Deltarune"; }
-            else if (File.Exists("UNDERTALE.exe") || File.Exists("../../UNDERTALE.app")) { labGameName.Text = "Undertale"; }
+            if (File.Exists("DELTARUNE.exe") || Directory.Exists("SURVEY_PROGRAM.app")) { labGameName.Text = "Deltarune"; }
+            else if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app")) { labGameName.Text = "Undertale"; }
             else
             {
-                labGameName.Text = GetGame().Replace(".exe", "");
+                labGameName.Text = Main.GetGame().Replace(".exe", "");
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
                     Logger.Log(MessageType.Warning, $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main._dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", true);
                 else
@@ -69,13 +69,16 @@ namespace HATE
 
             UpdateCorrupt();
 
-            //This is so it doesn't keep starting the program over and over in case something messes up
+            //This is so it doesn't keep starting the program over and over in case something messes up with becoming a elevated program in Windows (Linux and macOS don't need elevated permissions)
             if (App.OperatingSystem == App.OS.Windows && Process.GetProcessesByName("HATE.GTK").Length == 1)
             {
                 var task = Task.Run(() => BecomeElevated()).ConfigureAwait(false);
             }
+            Main.isWindows = App.OperatingSystem == App.OS.Windows;
+            Main.ismacOS = App.OperatingSystem == App.OS.macOS;
         }
 
+        //TOD: Fix
         public async Task BecomeElevated()
         {
             if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
@@ -85,9 +88,11 @@ namespace HATE
                 {
                     //Restart program and run as admin
                     var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
-                    startInfo.Arguments = "true";
-                    startInfo.Verb = "runas";
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                    {
+                        Arguments = "true",
+                        Verb = "runas" //What makes the program load with admin
+                    };
                     Process.Start(startInfo);
                     Application.Current.Quit();
                 }
@@ -102,7 +107,7 @@ namespace HATE
         {
             if (messageType.MessageType == MessageType.Debug)
             {
-                if(!messageType.WaitForAnything)
+                if (!messageType.WaitForAnything)
                     MessageBox.Show(messageType.Message, MessageBox.MessageButton.OK, MessageBox.MessageIcon.Information);
                 else
                     await MessageBox.Show(messageType.Message, MessageBox.MessageButton.OK, MessageBox.MessageIcon.Information);
@@ -132,26 +137,6 @@ namespace HATE
             }
         }
 
-        public string GetGame()
-        {
-            if (File.Exists("DELTARUNE.exe")) { return $"DELTARUNE.exe"; }
-            else if (Directory.Exists("SURVEY_PROGRAM.app")) { return "SURVEY_PROGRAM.app"; }
-            else if (File.Exists("UNDERTALE.exe")) { return $"UNDERTALE.exe"; }
-            else if (Directory.Exists("UNDERTALE.app")) { return "UNDERTALE.app"; }
-            else
-            {
-                var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
-                foreach (string s in files)
-                {
-                    if (App.OperatingSystem == App.OS.Windows && !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
-                        return s.Remove(0, s.LastIndexOf("\\") + 1);
-                    else if (s != "HATE.exe" && s.Contains(".exe") || s.Contains(".app"))
-                        return s.Remove(0, s.LastIndexOf("/") + 1);
-                }    
-            }
-            return "";
-        }
-
         public string LinuxWine()
         {
             if (App.OperatingSystem == App.OS.Linux)
@@ -165,17 +150,33 @@ namespace HATE
             EnableControls(false);
 
             ProcessStartInfo processStartInfo = null;
-            if (App.OperatingSystem == App.OS.Linux)
+            if (App.OperatingSystem == App.OS.Windows)
             {
-                processStartInfo = new ProcessStartInfo(LinuxWine(), arguments: GetGame())
+                processStartInfo = new ProcessStartInfo(Main.GetGame())
                 {
                     UseShellExecute = false,
                     RedirectStandardOutput = true
                 };
             }
-            else
+            else if (App.OperatingSystem == App.OS.Linux)
             {
-                processStartInfo = new ProcessStartInfo(GetGame())
+                processStartInfo = new ProcessStartInfo(LinuxWine(), arguments: Main.GetGame())
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
+            }
+            else if (App.OperatingSystem == App.OS.macOS)
+            {
+                processStartInfo = new ProcessStartInfo("open", $"-a '/Applications/{Main.GetGame()}'")
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
+            }
+            else if (App.OperatingSystem == App.OS.Unknown) //Let try to load it like how we do with Windows, worst case is we'll get a Exception and fail to load it
+            {
+                processStartInfo = new ProcessStartInfo(Main.GetGame())
                 {
                     UseShellExecute = false,
                     RedirectStandardOutput = true
@@ -199,19 +200,19 @@ namespace HATE
             EnableControls(false);
 
             try { _logWriter = new StreamWriter("HATE.log", true); }
-            catch (Exception) { Logger.Log( MessageType.Error, "Could not set up the log file."); }
+            catch (Exception) { Logger.Log(MessageType.Error, "Could not set up the log file."); }
 
             if (!Setup()) { goto End; };
             //DebugListChunks(_dataWin, _logWriter);
             //Shuffle.LoadDataAndFind("STRG", _random, 0, _logWriter, _dataWin, Shuffle.ComplexShuffle(Shuffle.StringDumpAccumulator, Shuffle.SimpleShuffler, Shuffle.SimpleWriter));
             if (_hitboxFix && !Main.HitboxFix_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleGFX && !Main.ShuffleGFX_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleText && !Main.ShuffleText_Func(_random, _truePower, _logWriter)) { goto End; }
+            if (_shuffleText && !Main.ShuffleText_Func(_random, _truePower, _logWriter, labGameName.Text)) { goto End; }
             if (_shuffleFont && !Main.ShuffleFont_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleBG && !Main.ShuffleBG_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleAudio && !Main.ShuffleAudio_Func(_random, _truePower, _logWriter)) { goto End; }
 
-            End:
+        End:
             _logWriter.Close();
             EnableControls(true);
         }
@@ -237,18 +238,17 @@ namespace HATE
 
             /** SEED PARSING AND RNG SETUP **/
             Main._friskMode = false;
-            byte power = 0;
             _random = new Random();
             int timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
-            if (!byte.TryParse(txtPower.Text, out power) && _corrupt)
+            if (!byte.TryParse(txtPower.Text, out byte power) && string.IsNullOrEmpty(txtPower.Text) && _corrupt)
             {
-                Logger.Log(MessageType.Warning ,"Please set Power to a number between 0 and 255 and try again.", true);
+                Logger.Log(MessageType.Warning, "Please set Power to a number between 0 and 255 and try again.", true);
                 return false;
             }
             _truePower = (float)power / 255;
 
-            if (txtSeed.Text.ToUpper() == "FRISK" && !File.Exists("DELTARUNE.exe"))
+            if (txtSeed.Text.ToUpper() == "FRISK" && !File.Exists("DELTARUNE.exe") || Directory.Exists("SURVEY_PROGRAM.app"))
                 Main._friskMode = true;
 
             if (_showSeed)
@@ -261,7 +261,7 @@ namespace HATE
             _logWriter.WriteLine($"TruePower - {_truePower}");
 
             /** ENVIRONMENTAL CHECKS **/
-            if (File.Exists("UNDERTALE.exe") && !File.Exists("./mus_barrier.ogg"))
+            if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app") && !File.Exists(Main.GetFileLocation("mus_barrier.ogg")))
             {
                 Logger.Log(MessageType.Error, "ERROR:\nIt seems you've either placed HATE.exe in the wrong location or are using an old version of Undertale. Solutions to both problems are given in the README.txt file included in the download.");
                 return false;
@@ -275,33 +275,33 @@ namespace HATE
             else if (!Directory.Exists("Data"))
             {
                 if (!Safe.CreateDirectory("Data")) { return false; }
-                if (!Safe.CopyFile(Main._dataWin, Path.Combine($"Data", Main._dataWin))) { return false; }
+                if (!Safe.CopyFile(Main.GetFileLocation(Main._dataWin), Path.Combine(Directory.GetCurrentDirectory(), "Data", Main._dataWin))) { return false; }
                 if (labGameName.Text == "Deltarune")
                 {
-                    if (!Safe.CreateDirectory("Data/lang")) { return false; }
-                    if (!Safe.CopyFile("./lang/lang_en.json", "./Data/lang/lang_en.json")) { return false; };
-                    if (!Safe.CopyFile("./lang/lang_ja.json", "./Data/lang/lang_ja.json")) { return false; };
+                    if (!Safe.CreateDirectory(Path.Combine("Data", "lang"))) { return false; }
+                    if (!Safe.CopyFile(Main.GetFileLocation(Path.Combine("lang", "lang_en.json")), Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_en.json"))) { return false; };
+                    if (!Safe.CopyFile(Main.GetFileLocation(Path.Combine("lang","lang_ja.json")), Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_ja.json"))) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
 
-            if (!Safe.DeleteFile(Main._dataWin)) { return false; }
+            if (!Safe.DeleteFile(Main.GetFileLocation(Main._dataWin))) { return false; }
             _logWriter.WriteLine($"Deleted {Main._dataWin}.");
             if (labGameName.Text == "Deltarune")
             {
-                if (!Safe.DeleteFile("./lang/lang_en.json")) { return false; }
+                if (!Safe.DeleteFile(Main.GetFileLocation(Path.Combine("lang", "lang_en.json")))) { return false; }
                 _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
-                if (!Safe.DeleteFile("./lang/lang_ja.json")) { return false; }
+                if (!Safe.DeleteFile(Main.GetFileLocation(Path.Combine("lang", "lang_ja.json")))) { return false; }
                 _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
             }
 
-            if (!Safe.CopyFile($"Data/{Main._dataWin}", Main._dataWin)) { return false; }
+            if (!Safe.CopyFile(Path.Combine(Directory.GetCurrentDirectory(), "Data", Main._dataWin), Main.GetFileLocation(Main._dataWin))) { return false; }
             _logWriter.WriteLine($"Copied {Main._dataWin}.");
             if (labGameName.Text == "Deltarune")
             {
-                if (!Safe.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
+                if (!Safe.CopyFile(Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_en.json"), Main.GetFileLocation(Path.Combine("lang", "lang_en.json")))) { return false; };
                 _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-                if (!Safe.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
+                if (!Safe.CopyFile(Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_ja.json"), Main.GetFileLocation(Path.Combine("lang", "lang_ja.json")))) { return false; };
                 _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
             }
 

@@ -48,46 +48,47 @@ namespace HATE.Core
     public class Main
     {
         public static string _dataWin = "data.win";
-        public static string GameName;
+        public static bool ismacOS = false;
+        public static bool isWindows = false;
         private static readonly string[] _friskSpriteHandles = { "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad", "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark", "spr_maincharad_pranked", "spr_maincharal_pranked", "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall", "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella", "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall", "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow", "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water", "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater", "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b", "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX" };
         public static bool _friskMode;
 
         public static bool ShuffleAudio_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("SOND", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle) &&
-                   Shuffle.LoadDataAndFind("AUDO", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);
+            return Shuffle.LoadDataAndFind("SOND", random, chance, logstream, GetFileLocation(_dataWin), Shuffle.SimpleShuffle) &&
+                   Shuffle.LoadDataAndFind("AUDO", random, chance, logstream, GetFileLocation(_dataWin), Shuffle.SimpleShuffle);
         }
 
         public static bool ShuffleBG_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("BGND", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);
+            return Shuffle.LoadDataAndFind("BGND", random, chance, logstream, GetFileLocation(_dataWin), Shuffle.SimpleShuffle);
         }
 
         public static bool ShuffleFont_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("FONT", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);
+            return Shuffle.LoadDataAndFind("FONT", random, chance, logstream, GetFileLocation(_dataWin), Shuffle.SimpleShuffle);
         }
 
         public static bool HitboxFix_Func(Random random_, float chance, StreamWriter logstream_)
         {
-            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, HitboxFix_Shuffler, Shuffle.SimpleWriter));
+            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, GetFileLocation(_dataWin), Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, HitboxFix_Shuffler, Shuffle.SimpleWriter));
         }
 
         public static bool ShuffleGFX_Func(Random random_, float chance, StreamWriter logstream_)
         {
-            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(ShuffleGFX_Accumulator, Shuffle.SimpleShuffler, Shuffle.SimpleWriter));
+            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, GetFileLocation(_dataWin), Shuffle.ComplexShuffle(ShuffleGFX_Accumulator, Shuffle.SimpleShuffler, Shuffle.SimpleWriter));
         }
 
-        public static bool ShuffleText_Func(Random random_, float chance, StreamWriter logstream_)
+        public static bool ShuffleText_Func(Random random_, float chance, StreamWriter logstream_, string game_name)
         {
-            if (GameName == "Deltarune")
+            if (game_name == "Deltarune")
             {
-                return Shuffle.JSONStringShuffle("./lang/lang_en.json", "./lang/lang_en.json", random_, chance, logstream_) &&
-                       Shuffle.JSONStringShuffle("./lang/lang_ja.json", "./lang/lang_ja.json", random_, chance, logstream_);
+                return Shuffle.JSONStringShuffle(GetFileLocation(Path.Combine("lang", "lang_en.json")), GetFileLocation(Path.Combine("lang", "lang_en.json")), random_, chance, logstream_) &&
+                       Shuffle.JSONStringShuffle(GetFileLocation(Path.Combine("lang", "lang_en.json")), GetFileLocation(Path.Combine("lang", "lang_en.json")), random_, chance, logstream_);
             }
             else
             {
-                return Shuffle.LoadDataAndFind("STRG", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, ShuffleText_Shuffler, Shuffle.SimpleWriter));
+                return Shuffle.LoadDataAndFind("STRG", random_, chance, logstream_, GetFileLocation(_dataWin), Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, ShuffleText_Shuffler, Shuffle.SimpleWriter));
             }
         }
 
@@ -215,6 +216,35 @@ namespace HATE.Core
             }
 
             return shuffledPointerList;
+        }
+
+        public static string GetGame()
+        {
+            if (File.Exists("DELTARUNE.exe")) { return $"DELTARUNE.exe"; }
+            else if (Directory.Exists("SURVEY_PROGRAM.app")) { return "SURVEY_PROGRAM.app"; }
+            else if (File.Exists("UNDERTALE.exe")) { return $"UNDERTALE.exe"; }
+            else if (Directory.Exists("UNDERTALE.app")) { return "UNDERTALE.app"; }
+            else
+            {
+                var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
+                foreach (string s in files)
+                {
+                    if (isWindows && !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
+                        return s.Remove(0, s.LastIndexOf("\\") + 1);
+                    else if (s != "HATE.exe" && s.Contains(".exe") || s.Contains(".app"))
+                        return s.Remove(0, s.LastIndexOf("/") + 1);
+                }
+            }
+            return "";
+        }
+
+        //Need this because macOS does stuff differenty so it's best if we work with the whole File Location String
+        public static string GetFileLocation(string File)
+        {
+            if (!ismacOS)
+                return Path.Combine(Directory.GetCurrentDirectory(), File);
+            else
+                return Path.Combine(Directory.GetCurrentDirectory(), GetGame(), "Contents", "Resources", File);
         }
 
         public static void DebugListChunks(string resource_file, StreamWriter logstream)

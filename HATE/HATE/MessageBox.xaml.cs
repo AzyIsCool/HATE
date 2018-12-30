@@ -57,7 +57,7 @@ namespace HATE
                 butNo.IsVisible = true;
                 butCancel.IsVisible = true;
             }
-            if ((int)_Icon == 0 | (int)_Icon == 16)
+            if ((int)_Icon == 0)
             {
                 ImageAndMessageGrid.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Absolute);
             }
@@ -173,7 +173,7 @@ namespace HATE
             Asterisk = 64,
             Error = 16, 
             Exclamation = 48, 
-            Hand = 16, //Not going to get a icon for this, you 
+            Hand = 16,
             Information = 64, 
             None = 0,
             Question = 32, 

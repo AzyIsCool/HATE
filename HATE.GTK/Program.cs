@@ -34,12 +34,17 @@ namespace HATE.GTK
                 window.WidthRequest = Width;
             else if (App.OperatingSystem == App.OS.Windows)
                 window.WidthRequest = Width - 15;
+            else if (App.OperatingSystem == App.OS.macOS)
+                window.WidthRequest = Width;
+
             window.DefaultWidth = window.WidthRequest;
 
             if(App.OperatingSystem == App.OS.Linux)
                 window.HeightRequest = Height;
             else if (App.OperatingSystem == App.OS.Windows)
                 window.HeightRequest = Height + 15;
+            else if (App.OperatingSystem == App.OS.macOS)
+                window.HeightRequest = Height - 30;
             window.DefaultHeight = window.HeightRequest;
 
             window.AllowGrow = false;
@@ -50,7 +55,9 @@ namespace HATE.GTK
 
         public static async Task MessageBoxTask()
         {
-            FormsWindow formsWindow = null;
+            _messageBox = new App(true);
+            FormsWindow formsWindow = await LoadWindow(_messageBox, 585, 135);
+            formsWindow.Hide();
             while (true)
             {
                 try
@@ -59,17 +66,10 @@ namespace HATE.GTK
                     {
                         await Task.Delay(10);
                     }
-                    if (_messageBox == null)
-                    {
-                        _messageBox = new App(true);
-                    }
                     //Gtk.Dialog dialog = new Gtk.Dialog("thing", null, Gtk.DialogFlags.Modal, "Ok");
                     //dialog.VBox.Add(new Gtk.Label(MessageBox._Message));
                     //dialog.ShowAll();
                     //dialog.DeleteEvent += Dialog_DeleteEvent;
-
-                    if (formsWindow == null)
-                        formsWindow = await LoadWindow(_messageBox, 585, 135);
 
                     await Task.Delay(500);
                     formsWindow.SetSizeRequest(585, (int)MessageBox._MessageHeight);
