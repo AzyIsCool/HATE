@@ -15,6 +15,11 @@ namespace HATE.Core
             try { Path.GetFullPath(path); } catch (Exception) { return false; } return true;
         }
 
+        public static bool IsValidFile(string path)
+        {
+            return File.Exists(path);
+        }
+
         public static Option<List<string>> GetDirectories(string dirname, string searchstring)
         {
             if (!IsValidPath(dirname) || string.IsNullOrWhiteSpace(searchstring) || !Directory.Exists(dirname) ) { return Option.None<List<string>>(); }

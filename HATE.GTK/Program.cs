@@ -30,20 +30,20 @@ namespace HATE.GTK
             window.SetApplicationTitle("HATE");
             window.SetApplicationIcon("hateicon.png");
 
-            if(App.OperatingSystem == App.OS.Linux)
+            if(HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Linux)
                 window.WidthRequest = Width;
-            else if (App.OperatingSystem == App.OS.Windows)
+            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Windows)
                 window.WidthRequest = Width - 15;
-            else if (App.OperatingSystem == App.OS.macOS)
+            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.macOS)
                 window.WidthRequest = Width;
 
             window.DefaultWidth = window.WidthRequest;
 
-            if(App.OperatingSystem == App.OS.Linux)
+            if(HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Linux)
                 window.HeightRequest = Height;
-            else if (App.OperatingSystem == App.OS.Windows)
+            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Windows)
                 window.HeightRequest = Height + 15;
-            else if (App.OperatingSystem == App.OS.macOS)
+            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.macOS)
                 window.HeightRequest = Height - 30;
             window.DefaultHeight = window.HeightRequest;
 

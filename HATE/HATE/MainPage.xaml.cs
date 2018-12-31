@@ -10,6 +10,9 @@ namespace HATE
 {
     public partial class MainPage : ContentPage
     {
+        //TODO: MessageBox H + W
+        //TODO: Get Linux builds of programs working for sure
+        //TODO: Any thing for macOS (Sizing and loading game)
         private static class Style
         {
             private static readonly Color _btnRestoreColor = Color.LimeGreen;
@@ -46,19 +49,19 @@ namespace HATE
             InitializeComponent();
             Logger.MessageHandle += Logger_SecondChange;
 
-            if (!File.Exists(Main._dataWin))
-            {
-                if (File.Exists("game.ios"))
-                    Main._dataWin = "game.ios";
-                else if (File.Exists("game.unx"))
-                    Main._dataWin = "game.unx";
-            }
+            if (File.Exists(Main.GetFileLocation("game.ios")))
+                Main._dataWin = "game.ios";
+            else if (File.Exists(Main.GetFileLocation("game.unx")))
+                Main._dataWin = "game.unx";
+            else if (File.Exists("data.win"))
+                Main._dataWin = "data.win";
 
-            if (File.Exists("DELTARUNE.exe") || Directory.Exists("SURVEY_PROGRAM.app")) { labGameName.Text = "Deltarune"; }
-            else if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app")) { labGameName.Text = "Undertale"; }
+            if (File.Exists("DELTARUNE.exe") || Directory.Exists("SURVEY_PROGRAM.app") || Safe.IsValidFile(Main.GetFileLocation("options.ini")) && File.ReadAllLines(Main.GetFileLocation("options.ini"))[1] == "DisplayName=\"SURVEY_PROGRAM\"") { labGameName.Text = "Deltarune"; }
+            else if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app") || Safe.IsValidFile(Main.GetFileLocation("options.ini")) && File.ReadAllLines(Main.GetFileLocation("options.ini"))[1] == "DisplayName=\"UNDERTALE\"") { labGameName.Text = "Undertale"; }
             else
             {
                 labGameName.Text = Main.GetGame().Replace(".exe", "");
+                //labGameName.Text = (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystemUser.macOS).ToString();
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
                     Logger.Log(MessageType.Warning, $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main._dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", true);
                 else
@@ -70,12 +73,10 @@ namespace HATE
             UpdateCorrupt();
 
             //This is so it doesn't keep starting the program over and over in case something messes up with becoming a elevated program in Windows (Linux and macOS don't need elevated permissions)
-            if (App.OperatingSystem == App.OS.Windows && Process.GetProcessesByName("HATE.GTK").Length == 1)
+            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && Process.GetProcessesByName("HATE.GTK").Length == 1)
             {
                 var task = Task.Run(() => BecomeElevated()).ConfigureAwait(false);
             }
-            Main.isWindows = App.OperatingSystem == App.OS.Windows;
-            Main.ismacOS = App.OperatingSystem == App.OS.macOS;
         }
 
         //TOD: Fix
@@ -133,13 +134,13 @@ namespace HATE
             get
             {
                 //                This is to make sure we are running on Windows
-                return App.OperatingSystem == App.OS.Windows && new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+                return OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
             }
         }
 
         public string LinuxWine()
         {
-            if (App.OperatingSystem == App.OS.Linux)
+            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
                 return "wine";
             else
                 return "";
@@ -150,7 +151,7 @@ namespace HATE
             EnableControls(false);
 
             ProcessStartInfo processStartInfo = null;
-            if (App.OperatingSystem == App.OS.Windows)
+            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows)
             {
                 processStartInfo = new ProcessStartInfo(Main.GetGame())
                 {
@@ -158,15 +159,26 @@ namespace HATE
                     RedirectStandardOutput = true
                 };
             }
-            else if (App.OperatingSystem == App.OS.Linux)
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
             {
-                processStartInfo = new ProcessStartInfo(LinuxWine(), arguments: Main.GetGame())
+                if (Main._dataWin == "data.win") 
                 {
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true
-                };
+                    processStartInfo = new ProcessStartInfo(LinuxWine(), arguments: Main.GetGame())
+                    {
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true
+                    };
+                }
+                else if (Main._dataWin == "game.unx")
+                {
+                    processStartInfo = new ProcessStartInfo(Main.GetGame())
+                    {
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true
+                    };
+                }
             }
-            else if (App.OperatingSystem == App.OS.macOS)
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.macOS)
             {
                 processStartInfo = new ProcessStartInfo("open", $"-a '/Applications/{Main.GetGame()}'")
                 {
@@ -174,7 +186,7 @@ namespace HATE
                     RedirectStandardOutput = true
                 };
             }
-            else if (App.OperatingSystem == App.OS.Unknown) //Let try to load it like how we do with Windows, worst case is we'll get a Exception and fail to load it
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown) //Let try to load it like how we do with Windows, worst case is we'll get a Exception and fail to load it
             {
                 processStartInfo = new ProcessStartInfo(Main.GetGame())
                 {
@@ -187,7 +199,7 @@ namespace HATE
             {
                 Process.Start(processStartInfo);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Logger.Log(MessageType.Error, $"Unable to launch {labGameName.Text}");
             }

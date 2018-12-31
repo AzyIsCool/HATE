@@ -47,9 +47,7 @@ namespace HATE.Core
 
     public class Main
     {
-        public static string _dataWin = "data.win";
-        public static bool ismacOS = false;
-        public static bool isWindows = false;
+        public static string _dataWin { get; set; }
         private static readonly string[] _friskSpriteHandles = { "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad", "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark", "spr_maincharad_pranked", "spr_maincharal_pranked", "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall", "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella", "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall", "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow", "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water", "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater", "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b", "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX" };
         public static bool _friskMode;
 
@@ -84,7 +82,7 @@ namespace HATE.Core
             if (game_name == "Deltarune")
             {
                 return Shuffle.JSONStringShuffle(GetFileLocation(Path.Combine("lang", "lang_en.json")), GetFileLocation(Path.Combine("lang", "lang_en.json")), random_, chance, logstream_) &&
-                       Shuffle.JSONStringShuffle(GetFileLocation(Path.Combine("lang", "lang_en.json")), GetFileLocation(Path.Combine("lang", "lang_en.json")), random_, chance, logstream_);
+                       Shuffle.JSONStringShuffle(GetFileLocation(Path.Combine("lang", "lang_ja.json")), GetFileLocation(Path.Combine("lang", "lang_ja.json")), random_, chance, logstream_);
             }
             else
             {
@@ -224,12 +222,13 @@ namespace HATE.Core
             else if (Directory.Exists("SURVEY_PROGRAM.app")) { return "SURVEY_PROGRAM.app"; }
             else if (File.Exists("UNDERTALE.exe")) { return $"UNDERTALE.exe"; }
             else if (Directory.Exists("UNDERTALE.app")) { return "UNDERTALE.app"; }
+            else if (File.Exists("runner")) { return "./runner"; }
             else
             {
                 var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
                 foreach (string s in files)
                 {
-                    if (isWindows && !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
+                    if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
                         return s.Remove(0, s.LastIndexOf("\\") + 1);
                     else if (s != "HATE.exe" && s.Contains(".exe") || s.Contains(".app"))
                         return s.Remove(0, s.LastIndexOf("/") + 1);
@@ -241,10 +240,13 @@ namespace HATE.Core
         //Need this because macOS does stuff differenty so it's best if we work with the whole File Location String
         public static string GetFileLocation(string File)
         {
-            if (!ismacOS)
+            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.macOS)
                 return Path.Combine(Directory.GetCurrentDirectory(), File);
-            else
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows | OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown)
                 return Path.Combine(Directory.GetCurrentDirectory(), GetGame(), "Contents", "Resources", File);
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
+                return Path.Combine(Directory.GetCurrentDirectory(), "assets", File);
+            return File; //In case it non of them somehow
         }
 
         public static void DebugListChunks(string resource_file, StreamWriter logstream)
