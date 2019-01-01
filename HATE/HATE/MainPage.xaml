@@ -26,7 +26,7 @@
         <StackLayout>
             <Label FontFamily="Microsoft Sans Serif" Text="Current Game:" 
            HorizontalOptions="Start" FontSize="10.25"/>
-            <Label FontFamily="Microsoft Sans Serif" Text="Deltarune" x:Name="labGameName"
+            <Label FontFamily="Microsoft Sans Serif" Text="Not found" x:Name="labGameName"
            HorizontalOptions="Start" TextColor="Yellow" FontSize="12.25"/>
         </StackLayout>
         <StackLayout Margin="0,1,0,0">

@@ -229,7 +229,14 @@ namespace HATE.Core
                 foreach (string s in files)
                 {
                     if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
-                        return s.Remove(0, s.LastIndexOf("\\") + 1);
+                    {
+                        int count = s.Length - 1;
+                        for (int i = 0; i < s.Length; i++)
+                        {
+                            if (s[i] == '\\') { count = i; }
+                        }
+                        return s.Remove(0, count + 1);
+                    }
                     else if (s != "HATE.exe" && s.Contains(".exe") || s.Contains(".app"))
                         return s.Remove(0, s.LastIndexOf("/") + 1);
                 }

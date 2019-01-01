@@ -51,7 +51,8 @@ namespace HATE.UI
             else if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app") || Safe.IsValidFile(Main.GetFileLocation("options.ini")) && File.ReadAllLines(Main.GetFileLocation("options.ini"))[1] == "DisplayName=\"UNDERTALE\"") { labGameName.Text = "Undertale"; }
             else
             {
-                labGameName.Text = Main.GetGame().Replace(".exe", "");
+                string game = Main.GetGame().Replace(".exe", "");
+                if (!string.IsNullOrWhiteSpace(game)) { labGameName.Text = game; }
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
                     Logger.Log(MessageType.Warning, $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main._dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", true);
                 else
