@@ -3,19 +3,19 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace HATE
+namespace HATE.UI
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MessageBox : ContentPage
     {
-        private static MessageResult _Result { get; set; }
-        private static MessageIcon _Icon { get; set; }
         private static MessageButton _Buttons { get; set; }
-        public static string _Title { get; set; }
-        public static string _Message { get; set; }
-        public MessageResult Result { get; set; }
+        private static MessageResult _Result { get; set; }
         public static MessageBox _MessageBox { get; set; }
         public static double _MessageHeight { get; set; }
+        private static MessageIcon _Icon { get; set; }
+        public static string _Message { get; set; }
+        public static string _Title { get; set; }
+        public MessageResult Result { get; set; }
 
         public MessageBox()
         {
@@ -26,6 +26,14 @@ namespace HATE
         public async void Setup()
         {
             labMessage.Text = _Message;
+
+            butNo.IsVisible = false;
+            butOK.IsVisible = false;
+            butYes.IsVisible = false;
+            butAbort.IsVisible = false;
+            butRetry.IsVisible = false;
+            butCancel.IsVisible = false;
+            butIgnore.IsVisible = false;
             if (_Buttons == MessageButton.AbortRetryIgnore)
             {
                 butAbort.IsVisible = true;
@@ -57,40 +65,30 @@ namespace HATE
                 butNo.IsVisible = true;
                 butCancel.IsVisible = true;
             }
+
             if ((int)_Icon == 0)
-            {
                 ImageAndMessageGrid.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Absolute);
-            }
             else
-            {
                 ImageAndMessageGrid.ColumnDefinitions[0].Width = new GridLength(60, GridUnitType.Absolute);
-            }
 
             if ((int)_Icon == 64)
-            {
                 imgIcon.Source = ImageSource.FromFile("Images/information-outline.png");
-            }
             else if ((int)_Icon == 48)
-            {
                 imgIcon.Source = ImageSource.FromFile("Images/alert.png");
-            }
             else if ((int)_Icon == 16)
-            {
                 imgIcon.Source = ImageSource.FromFile("Images/alert-circle-outline.png");
-            }
             else if ((int)_Icon == 32)
-            {
                 imgIcon.Source = ImageSource.FromFile("Images/information-outline.png");
-            }
+
             Task.Run(() => GetWindowSize());
             _MessageBox = this;
         }
 
         public async Task GetWindowSize()
         {
-            await Task.Delay(500);
-            _MessageHeight = Buttons.Height + (labMessage.Height >= imgIcon.Height ? labMessage.Height : imgIcon.Height) + 40;
-            _MessageHeight = Math.Round(_MessageHeight);
+            await Task.Delay(500); //I don't know why but this seems to be the most reliable¯\_(ツ)_/¯
+            _MessageHeight = Buttons.Height + (labMessage.Height >= imgIcon.Height ? labMessage.Height : imgIcon.Height) + 60;
+            _MessageHeight = _MessageHeight >= 135.00 ? Math.Round(_MessageHeight) : 135;
         }
 
         public async Task _Show(string Message, MessageButton MessageButton, MessageIcon MessageIcon, string Title) 
@@ -126,8 +124,7 @@ namespace HATE
 
         public void SomeMagicalThing(object sender, EventArgs e)
         {
-            Button button = (Button)sender;
-            switch (button.Text)
+            switch (((Button)sender).Text)
             {
                 case "Abort":
                     _Result = MessageResult.Abort;

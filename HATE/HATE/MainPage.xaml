@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:HATE"
-             x:Class="HATE.MainPage"
+             x:Class="HATE.UI.MainPage"
              BackgroundColor="Black">
     <ContentPage.Resources>
         <Style TargetType="Label">
@@ -93,5 +92,4 @@
             <Button Text="-LAUNCH-" FontFamily="Microsoft Sans Serif" FontSize="8.25" FontAttributes="Bold" BackgroundColor="Black" BorderColor="Fuchsia" TextColor="Fuchsia" x:Name="btnLaunch" Clicked="btnLaunch_Clicked"/>
         </StackLayout>
     </StackLayout>
-
 </ContentPage>

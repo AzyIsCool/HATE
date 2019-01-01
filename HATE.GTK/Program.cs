@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
+using HATE.UI;
+using System.IO;
 using Xamarin.Forms;
+using System.Threading.Tasks;
 using Xamarin.Forms.Platform.GTK;
 
 namespace HATE.GTK
@@ -20,7 +22,15 @@ namespace HATE.GTK
             MessageBoxTask();
             LoadWindow(_app);
 
-            Gtk.Application.Run();
+            try
+            {
+                Gtk.Application.Run();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                File.AppendAllText("HATE.log", $"Program crash (Likely that GTK# had a moment):\r\n{e}");
+            }
         }
 
         public static async Task<FormsWindow> LoadWindow(App app, int Width = 220, int Height = 485)
@@ -30,21 +40,21 @@ namespace HATE.GTK
             window.SetApplicationTitle("HATE");
             window.SetApplicationIcon("hateicon.png");
 
-            if(HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Linux)
+            if(Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Linux)
                 window.WidthRequest = Width;
-            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Windows)
+            else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Windows)
                 window.WidthRequest = Width - 15;
-            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.macOS)
+            else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.macOS)
                 window.WidthRequest = Width;
 
             window.DefaultWidth = window.WidthRequest;
 
-            if(HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Linux)
-                window.HeightRequest = Height;
-            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.Windows)
+            if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Linux)
+                window.HeightRequest = Height - 2;
+            else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Windows)
                 window.HeightRequest = Height + 15;
-            else if (HATE.Core.OS.WhatOperatingSystemUserIsOn == HATE.Core.OS.OperatingSystem.macOS)
-                window.HeightRequest = Height - 30;
+            else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.macOS)
+                window.HeightRequest = Height - 40;
             window.DefaultHeight = window.HeightRequest;
 
             window.AllowGrow = false;
@@ -66,12 +76,7 @@ namespace HATE.GTK
                     {
                         await Task.Delay(10);
                     }
-                    //Gtk.Dialog dialog = new Gtk.Dialog("thing", null, Gtk.DialogFlags.Modal, "Ok");
-                    //dialog.VBox.Add(new Gtk.Label(MessageBox._Message));
-                    //dialog.ShowAll();
-                    //dialog.DeleteEvent += Dialog_DeleteEvent;
-
-                    await Task.Delay(500);
+                    await Task.Delay(510);
                     formsWindow.SetSizeRequest(585, (int)MessageBox._MessageHeight);
                     formsWindow.ShowAll();
                     if (!string.IsNullOrWhiteSpace(MessageBox._Title))
@@ -82,6 +87,7 @@ namespace HATE.GTK
                         await Task.Delay(10);
                     }
                     formsWindow.Hide();
+                    MessageBox._MessageHeight = 135;
                 }
                 catch
                 {
@@ -90,13 +96,5 @@ namespace HATE.GTK
                 }
             }
         }
-
-        //private static void Dialog_DeleteEvent(object o, Gtk.DeleteEventArgs args)
-        //{
-        //    App.NeedMessageBox = false;
-        //    ((Gtk.Dialog)o).Destroy();
-        //    ((Gtk.Dialog)o).DeleteEvent -= Dialog_DeleteEvent;
-        //    o = null;
-        //}
     }
 }

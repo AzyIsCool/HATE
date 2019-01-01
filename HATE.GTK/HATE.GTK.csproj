@@ -113,13 +113,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HATE\HATE\HATE.csproj">
-      <Project>{921d2094-1f4d-4149-9276-73778ee75b39}</Project>
-      <Name>HATE</Name>
-    </ProjectReference>
     <ProjectReference Include="..\HATE.Core\HATE.Core.csproj">
       <Project>{61A17BA7-92A6-4402-B0CE-51274F6A5E29}</Project>
       <Name>HATE.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HATE\HATE\HATE.UI.csproj">
+      <Project>{921D2094-1F4D-4149-9276-73778EE75B39}</Project>
+      <Name>HATE.UI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +144,9 @@
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="webkit-sharp.dll.config" />
+    <None Include="run_HATE.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

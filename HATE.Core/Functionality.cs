@@ -240,13 +240,13 @@ namespace HATE.Core
         //Need this because macOS does stuff differenty so it's best if we work with the whole File Location String
         public static string GetFileLocation(string File)
         {
-            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.macOS)
-                return Path.Combine(Directory.GetCurrentDirectory(), File);
-            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows | OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown)
-                return Path.Combine(Directory.GetCurrentDirectory(), GetGame(), "Contents", "Resources", File);
-            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
+            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux && Safe.IsValidFile(Path.Combine(Directory.GetCurrentDirectory(), "assets", "options.ini")))
                 return Path.Combine(Directory.GetCurrentDirectory(), "assets", File);
-            return File; //In case it non of them somehow
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.macOS)
+                return Path.Combine(Directory.GetCurrentDirectory(), GetGame(), "Contents", "Resources", File);
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows | OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown | OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
+                return Path.Combine(Directory.GetCurrentDirectory(), File);
+            return File; //In case it none of them somehow
         }
 
         public static void DebugListChunks(string resource_file, StreamWriter logstream)

@@ -37,11 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Tmp.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Security.Principal.Windows" Version="4.5.1" />
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
   </ItemGroup>
 

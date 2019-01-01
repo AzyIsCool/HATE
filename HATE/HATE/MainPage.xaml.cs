@@ -6,25 +6,15 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace HATE
+namespace HATE.UI
 {
     public partial class MainPage : ContentPage
     {
-        //TODO: MessageBox H + W
-        //TODO: Get Linux builds of programs working for sure
-        //TODO: Any thing for macOS (Sizing and loading game)
-        private static class Style
+        private static class UIStyle
         {
-            private static readonly Color _btnRestoreColor = Color.LimeGreen;
-            private static readonly Color _btnCorruptColor = Color.Coral;
-            private static readonly string _btnRestoreLabel = " -RESTORE- ";
-            private static readonly string _btnCorruptLabel = " -CORRUPT- ";
-            private static readonly Color _optionSet = Color.Yellow;
-            private static readonly Color _optionUnset = Color.White;
-
-            public static Color GetOptionColor(bool b) { return b ? _optionSet : _optionUnset; }
-            public static Color GetCorruptColor(bool b) { return b ? _btnCorruptColor : _btnRestoreColor; }
-            public static string GetCorruptLabel(bool b) { return b ? _btnCorruptLabel : _btnRestoreLabel; }
+            public static Color GetOptionColor(bool IsTicked) { return IsTicked ? Color.Yellow : Color.White; }
+            public static Color GetCorruptColor(bool IsCorrupting) { return IsCorrupting ? Color.Coral : Color.LimeGreen; }
+            public static string GetCorruptLabel(bool IsCorrupting) { return IsCorrupting ? "-CORRUPT-" : "-RESTORE-"; }
         }
 
         private StreamWriter _logWriter;
@@ -61,7 +51,6 @@ namespace HATE
             else
             {
                 labGameName.Text = Main.GetGame().Replace(".exe", "");
-                //labGameName.Text = (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystemUser.macOS).ToString();
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
                     Logger.Log(MessageType.Warning, $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main._dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", true);
                 else
@@ -73,32 +62,51 @@ namespace HATE
             UpdateCorrupt();
 
             //This is so it doesn't keep starting the program over and over in case something messes up with becoming a elevated program in Windows (Linux and macOS don't need elevated permissions)
-            if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && Process.GetProcessesByName("HATE.GTK").Length == 1)
+            if (Process.GetProcessesByName("HATE").Length == 1)
             {
-                var task = Task.Run(() => BecomeElevated()).ConfigureAwait(false);
+                Task.Run(() => BecomeElevated()).ConfigureAwait(false);
             }
         }
 
-        //TOD: Fix
+        public bool HasWriteAccess(string directory)
+        {
+            try
+            {
+                File.WriteAllText(Path.Combine(directory, "Wew"), "Wew this is just HATE checking if we can write and delete to the drive");
+                File.Delete(Path.Combine(directory, "Wew"));
+            }
+            catch { return false; }
+            return true;
+        }
+
         public async Task BecomeElevated()
         {
-            if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
+            if (!HasWriteAccess(Main.GetFileLocation("Wew").Replace("/Wew", "")))
             {
-                var dialogResult = MessageBox.Show($"The game is in a system protected folder and we need elevated permissions in order to mess with {Main._dataWin}, Do you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)", MessageBox.MessageButton.YesNo, MessageBox.MessageIcon.Exclamation).ConfigureAwait(true).GetAwaiter().GetResult();
-                if (dialogResult == MessageBox.MessageResult.Yes)
+                if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows)
                 {
-                    //Restart program and run as admin
-                    var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                    ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                    var dialogResult = MessageBox.Show($"The game is in a protected folder and we need elevated permissions in order to mess with {Main._dataWin}, Do you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)", MessageBox.MessageButton.YesNo, MessageBox.MessageIcon.Exclamation).ConfigureAwait(true).GetAwaiter().GetResult();
+                    if (dialogResult == MessageBox.MessageResult.Yes)
                     {
-                        Arguments = "true",
-                        Verb = "runas" //What makes the program load with admin
-                    };
-                    Process.Start(startInfo);
-                    Application.Current.Quit();
+                        //Restart program and run as admin
+                        var exeName = "HATE.exe";
+                        ProcessStartInfo startInfo = new ProcessStartInfo(exeName)
+                        {
+                            Arguments = "true",
+                            Verb = "runas" //What makes the program load with admin
+                        };
+
+                        Process.Start(startInfo);
+                        Application.Current.Quit();
+                    }
+                    else
+                    {
+                        Application.Current.Quit();
+                    }
                 }
-                else
+                else 
                 {
+                    MessageBox.Show($"The game is in a protected folder and we need elevated permissions in order to mess with {Main._dataWin}. You need to open this with sudo (if you used a .sh file to open this make sure it says sudo mono HATE.exe and if you opened this though bash)", MessageBox.MessageButton.OK, MessageBox.MessageIcon.Exclamation).ConfigureAwait(true).GetAwaiter().GetResult();
                     Application.Current.Quit();
                 }
             }
@@ -126,15 +134,6 @@ namespace HATE
                     MessageBox.Show(messageType.Message, MessageBox.MessageButton.OK, MessageBox.MessageIcon.Error);
                 else
                     await MessageBox.Show(messageType.Message, MessageBox.MessageButton.OK, MessageBox.MessageIcon.Error);
-            }
-        }
-
-        public bool IsElevated
-        {
-            get
-            {
-                //                This is to make sure we are running on Windows
-                return OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows && new System.Security.Principal.WindowsPrincipal(System.Security.Principal.WindowsIdentity.GetCurrent()).IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
             }
         }
 
@@ -195,14 +194,8 @@ namespace HATE
                 };
             }
 
-            try
-            {
-                Process.Start(processStartInfo);
-            }
-            catch (Exception)
-            {
-                Logger.Log(MessageType.Error, $"Unable to launch {labGameName.Text}");
-            }
+            try { Process.Start(processStartInfo); }
+            catch (Exception) { Logger.Log(MessageType.Error, $"Unable to launch {labGameName.Text}"); }
 
             EnableControls(true);
         }
@@ -224,7 +217,7 @@ namespace HATE
             if (_shuffleBG && !Main.ShuffleBG_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleAudio && !Main.ShuffleAudio_Func(_random, _truePower, _logWriter)) { goto End; }
 
-        End:
+            End:
             _logWriter.Close();
             EnableControls(true);
         }
@@ -279,7 +272,7 @@ namespace HATE
                 return false;
             }
 
-            if (!File.Exists(Main._dataWin))
+            if (!File.Exists(Main.GetFileLocation(Main._dataWin)))
             {
                 Logger.Log(MessageType.Error, $"You seem to be missing your resource file, {Main._dataWin}. Make sure you've placed HATE.exe in the proper location.");
                 return false;
@@ -323,64 +316,63 @@ namespace HATE
         public void UpdateCorrupt()
         {
             _corrupt = _shuffleGFX || _shuffleText || _hitboxFix || _shuffleFont || _shuffleAudio || _shuffleBG || _garbleText;
-            btnCorrupt.Text = Style.GetCorruptLabel(_corrupt);
-            btnCorrupt.TextColor = Style.GetCorruptColor(_corrupt);
+            btnCorrupt.Text = UIStyle.GetCorruptLabel(_corrupt);
+            btnCorrupt.TextColor = UIStyle.GetCorruptColor(_corrupt);
             btnCorrupt.BorderColor = btnCorrupt.TextColor;
         }
 
         private void chbShuffleAudio_Toggled(object sender, ToggledEventArgs e)
         {
             _shuffleAudio = chbShuffleAudio.IsToggled;
-            labShuffleAudio.TextColor = Style.GetOptionColor(_shuffleAudio);
+            labShuffleAudio.TextColor = UIStyle.GetOptionColor(_shuffleAudio);
             UpdateCorrupt();
         }
 
         private void chbShuffleGFX_Toggled(object sender, ToggledEventArgs e)
         {
             _shuffleGFX = chbShuffleGFX.IsToggled;
-            labShuffleGFX.TextColor = Style.GetOptionColor(_shuffleGFX);
+            labShuffleGFX.TextColor = UIStyle.GetOptionColor(_shuffleGFX);
             UpdateCorrupt();
         }
 
         private void chbShuffleFonts_Toggled(object sender, ToggledEventArgs e)
         {
             _shuffleFont = chbShuffleFonts.IsToggled;
-            labShuffleFonts.TextColor = Style.GetOptionColor(_shuffleFont);
+            labShuffleFonts.TextColor = UIStyle.GetOptionColor(_shuffleFont);
             UpdateCorrupt();
         }
 
         private void chbHitboxFix_Toggled(object sender, ToggledEventArgs e)
         {
             _hitboxFix = chbHitboxFix.IsToggled;
-            labHitboxFix.TextColor = Style.GetOptionColor(_hitboxFix);
+            labHitboxFix.TextColor = UIStyle.GetOptionColor(_hitboxFix);
             UpdateCorrupt();
         }
 
         private void chbShuffleSprites_Toggled(object sender, ToggledEventArgs e)
         {
             _shuffleBG = chbShuffleSprites.IsToggled;
-            labShuffleSprites.TextColor = Style.GetOptionColor(_shuffleBG);
+            labShuffleSprites.TextColor = UIStyle.GetOptionColor(_shuffleBG);
             UpdateCorrupt();
         }
 
         private void chbShuffleText_Toggled(object sender, ToggledEventArgs e)
         {
             _shuffleText = chbShuffleText.IsToggled;
-            labShuffleText.TextColor = Style.GetOptionColor(_shuffleText);
+            labShuffleText.TextColor = UIStyle.GetOptionColor(_shuffleText);
             UpdateCorrupt();
         }
 
         private void chbGarbleText_Toggled(object sender, ToggledEventArgs e)
         {
             _garbleText = chbGarbleText.IsToggled;
-            labGarbleText.TextColor = Style.GetOptionColor(_garbleText);
+            labGarbleText.TextColor = UIStyle.GetOptionColor(_garbleText);
             UpdateCorrupt();
         }
 
         private void chbShowSeed_Toggled(object sender, ToggledEventArgs e)
         {
             _showSeed = chbShowSeed.IsToggled;
-            labShowSeed.TextColor = Style.GetOptionColor(_showSeed);
         }
     }
 }

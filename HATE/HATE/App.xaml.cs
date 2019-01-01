@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
-namespace HATE
+namespace HATE.UI
 {
     public partial class App : Application
     {
