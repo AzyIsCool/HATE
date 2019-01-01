@@ -37,6 +37,7 @@ namespace HATE.UI
         public MainPage()
         {
             InitializeComponent();
+
             Logger.MessageHandle += Logger_SecondChange;
 
             if (File.Exists(Main.GetFileLocation("game.ios")))
@@ -81,7 +82,7 @@ namespace HATE.UI
 
         public async Task BecomeElevated()
         {
-            if (!HasWriteAccess(Main.GetFileLocation("Wew").Replace("/Wew", "")))
+            if (File.Exists(Main.GetFileLocation(Main._dataWin)) && !HasWriteAccess(Main.GetFileLocation("Wew").Replace("/Wew", "")))
             {
                 if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows)
                 {

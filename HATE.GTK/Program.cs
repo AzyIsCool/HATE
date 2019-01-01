@@ -43,7 +43,7 @@ namespace HATE.GTK
             if(Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Linux)
                 window.WidthRequest = Width;
             else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.Windows)
-                window.WidthRequest = Width - 15;
+                window.WidthRequest = Width;
             else if (Core.OS.WhatOperatingSystemUserIsOn == Core.OS.OperatingSystem.macOS)
                 window.WidthRequest = Width;
 
