@@ -47,6 +47,16 @@ namespace HATE.UI
             else if (File.Exists("data.win"))
                 Main._dataWin = "data.win";
 
+            if (string.IsNullOrWhiteSpace(Main._dataWin))
+            {
+                if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.macOS)
+                    Main._dataWin = "game.ios";
+                else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Linux)
+                    Main._dataWin = "game.unx";
+                else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows || OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown)
+                    Main._dataWin = "data.win";
+            }
+
             if (File.Exists("DELTARUNE.exe") || Directory.Exists("SURVEY_PROGRAM.app") || Safe.IsValidFile(Main.GetFileLocation("options.ini")) && File.ReadAllLines(Main.GetFileLocation("options.ini"))[1] == "DisplayName=\"SURVEY_PROGRAM\"") { labGameName.Text = "Deltarune"; }
             else if (File.Exists("UNDERTALE.exe") || Directory.Exists("UNDERTALE.app") || Safe.IsValidFile(Main.GetFileLocation("options.ini")) && File.ReadAllLines(Main.GetFileLocation("options.ini"))[1] == "DisplayName=\"UNDERTALE\"") { labGameName.Text = "Undertale"; }
             else
