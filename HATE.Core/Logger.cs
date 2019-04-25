@@ -6,7 +6,7 @@ namespace HATE.Core.Logging
     public class Logger
     {
         public delegate void MessageHandler(MessageEventArgs messageType);
-        
+
         public static event MessageHandler MessageHandle;
 
         public static void Log(MessageType messageType, string message, bool wait = false)
@@ -30,6 +30,7 @@ namespace HATE.Core.Logging
             Message = message;
             WaitForAnything = waitForAnything;
         }
+
         public readonly MessageType MessageType;
         public readonly string Message;
         public readonly bool WaitForAnything;

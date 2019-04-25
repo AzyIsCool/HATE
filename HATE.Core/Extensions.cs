@@ -40,8 +40,9 @@ namespace HATE.Core
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
 
-            return array.Select(x => (char.IsLetterOrDigit((char)x) && random.NextDouble() < chnc)  ? (byte)(random.Next(75) + 47) : x).ToArray();         
+            return array.Select(x =>
+                    (char.IsLetterOrDigit((char) x) && random.NextDouble() < chnc) ? (byte) (random.Next(75) + 47) : x)
+                .ToArray();
         }
     }
-
 }

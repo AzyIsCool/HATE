@@ -12,7 +12,9 @@ namespace HATE.Core
         public const int NumDataSegments = 25;
 
 
-        public static bool LoadDataAndFind(string seeked_header, Random random, float shufflechance, StreamWriter logstream, string resource_file, Func<FileStream, Random, float, string, StreamWriter, bool> shufflefunc)
+        public static bool LoadDataAndFind(string seeked_header, Random random, float shufflechance,
+            StreamWriter logstream, string resource_file,
+            Func<FileStream, Random, float, string, StreamWriter, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
@@ -30,7 +32,7 @@ namespace HATE.Core
                 {
                     stream.Read(readBuffer, 0, WordSize);
 
-                    string headerName = new string(readBuffer.Select(x => (char)x).ToArray());
+                    string headerName = new string(readBuffer.Select(x => (char) x).ToArray());
 
                     if (headerName == seeked_header)
                     {
@@ -42,13 +44,15 @@ namespace HATE.Core
                         {
                             if (!shufflefunc(stream, random, shufflechance, seeked_header, logstream))
                             {
-                                logstream.WriteLine($"An Error Occured While Attempting To Modify {seeked_header} Memory Region.");
+                                logstream.WriteLine(
+                                    $"An Error Occured While Attempting To Modify {seeked_header} Memory Region.");
                                 return false;
                             }
                         }
                         catch (Exception e)
                         {
-                            logstream.Write($"Exception Caught While Attempting To Modify {seeked_header} Memory Region. -> {e}");
+                            logstream.Write(
+                                $"Exception Caught While Attempting To Modify {seeked_header} Memory Region. -> {e}");
                             throw;
                         }
 
@@ -64,12 +68,20 @@ namespace HATE.Core
                 logstream.WriteLine($"Could not find {seeked_header} Memory Region.");
                 logstream.WriteLine($"Closed {resource_file}.");
             }
+
             return false;
         }
 
 
-
-        enum ComplexShuffleStep : byte { Accumulation, FirstLog, Shuffling, SecondLog, Writing, ThirdLog }
+        enum ComplexShuffleStep : byte
+        {
+            Accumulation,
+            FirstLog,
+            Shuffling,
+            SecondLog,
+            Writing,
+            ThirdLog
+        }
 
         public static Func<FileStream, Random, float, string, StreamWriter, bool> ComplexShuffle(
             Func<FileStream, Random, float, StreamWriter, List<ResourcePointer>> accumulator,
@@ -96,7 +108,8 @@ namespace HATE.Core
                 }
                 catch (Exception ex)
                 {
-                    logstream.WriteLine($"Caught exception [{ex}] while editing {header} memory block, during step {step}.");
+                    logstream.WriteLine(
+                        $"Caught exception [{ex}] while editing {header} memory block, during step {step}.");
                     throw;
                 }
 
@@ -104,7 +117,8 @@ namespace HATE.Core
             };
         }
 
-        public static List<ResourcePointer> SimpleAccumulator(FileStream stream, Random random, float shufflechance, StreamWriter logstream)
+        public static List<ResourcePointer> SimpleAccumulator(FileStream stream, Random random, float shufflechance,
+            StreamWriter logstream)
         {
             byte[] readBuffer = new byte[WordSize];
             int pointerNum = 0;
@@ -118,31 +132,37 @@ namespace HATE.Core
                 stream.Read(readBuffer, 0, WordSize);
 
                 if (random.NextDouble() < shufflechance)
-                    pointerList.Add(new ResourcePointer(BitConverter.ToInt32(readBuffer, 0), (int)(stream.Position - WordSize)));
+                    pointerList.Add(new ResourcePointer(BitConverter.ToInt32(readBuffer, 0),
+                        (int) (stream.Position - WordSize)));
             }
 
             return pointerList;
         }
 
-        public static List<ResourcePointer> SimpleShuffler(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
+        public static List<ResourcePointer> SimpleShuffler(FileStream stream, Random random, float shufflechance,
+            StreamWriter logstream, List<ResourcePointer> pointerlist)
         {
             pointerlist.Shuffle(PointerSwapLoc, random);
             return pointerlist;
         }
 
-        public static bool SimpleWriter(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
+        public static bool SimpleWriter(FileStream stream, Random random, float shufflechance, StreamWriter logstream,
+            List<ResourcePointer> pointerlist)
         {
             foreach (ResourcePointer ptr in pointerlist)
             {
                 stream.Position = ptr.Location;
                 stream.Write(BitConverter.GetBytes(ptr.Address), 0, WordSize);
             }
+
             return true;
         }
 
-        public static Func<FileStream, Random, float, string, StreamWriter, bool> SimpleShuffle = ComplexShuffle(SimpleAccumulator, SimpleShuffler, SimpleWriter);
+        public static Func<FileStream, Random, float, string, StreamWriter, bool> SimpleShuffle =
+            ComplexShuffle(SimpleAccumulator, SimpleShuffler, SimpleWriter);
 
-        public static List<ResourcePointer> StringDumpAccumulator(FileStream stream, Random random, float shufflechance, StreamWriter logstream)
+        public static List<ResourcePointer> StringDumpAccumulator(FileStream stream, Random random, float shufflechance,
+            StreamWriter logstream)
         {
             byte[] readBuffer = new byte[WordSize];
             int pointerNum = 0;
@@ -164,7 +184,7 @@ namespace HATE.Core
                 byte[] byteBuf = new byte[str_size];
 
                 stream.Read(byteBuf, 0, str_size);
-                string output = new string(byteBuf.Select(x => (char)x).ToArray());
+                string output = new string(byteBuf.Select(x => (char) x).ToArray());
 
                 logstream.WriteLine($"Str at: {cur_pos}, ptr_to: {str_ptr}, str: {output}");
                 stream.Position = cur_pos;
@@ -192,7 +212,7 @@ namespace HATE.Core
             {
                 Key = key;
                 Str = str;
-                char[] FormatChars = { '%', '/', 'C' };
+                char[] FormatChars = {'%', '/', 'C'};
                 List<char> Ending = new List<char>();
 
                 for (int i = 1; i < str.Length; i++)
@@ -217,7 +237,8 @@ namespace HATE.Core
             rref.Key = tmp;
         }
 
-        public static bool JSONStringShuffle(string resource_file, string target_file, Random random, float shufflechance, StreamWriter logstream)
+        public static bool JSONStringShuffle(string resource_file, string target_file, Random random,
+            float shufflechance, StreamWriter logstream)
         {
             // actual JSON libraries are complicated, thankfully we can bodge it together with magic and friendship
             if (random == null)
@@ -232,38 +253,41 @@ namespace HATE.Core
                 StreamReader text_reader = new StreamReader(stream);
                 logstream.WriteLine($"Opened {resource_file}.");
                 long date = 0;
-                
+
 
                 while (stream.Position != stream.Length)
                 {
                     string cur_line = text_reader.ReadLine();
-                    if (cur_line == "}" || cur_line == "{") { continue; }
+                    if (cur_line == "}" || cur_line == "{")
+                    {
+                        continue;
+                    }
 
                     Match m = json_line_regex.Match(cur_line);
 
 
-                  //  logstream.WriteLine($"line: {cur_line} | group_size: {m.Groups.Count}");
-                  //  logstream.Flush();
+                    //  logstream.WriteLine($"line: {cur_line} | group_size: {m.Groups.Count}");
+                    //  logstream.Flush();
 
-                    string[] match = {m.Groups[1].ToString(), m.Groups[2].ToString() };
-                   // logstream.WriteLine($"aaaaa: {match[0]} _ {match[1]}");
+                    string[] match = {m.Groups[1].ToString(), m.Groups[2].ToString()};
+                    // logstream.WriteLine($"aaaaa: {match[0]} _ {match[1]}");
 
                     strings.Add(new JSONStringEntry(match[0], match[1]));
                 }
             }
+
             logstream.WriteLine($"Closed {resource_file}.");
 
             logstream.WriteLine($"Gathered {strings.Count} JSON String Entries. ");
 
-            string[] bannedStrings = { "_" };
-            string[] bannedKeys = { "date" };
+            string[] bannedStrings = {"_"};
+            string[] bannedKeys = {"date"};
 
             List<JSONStringEntry> good_strings = new List<JSONStringEntry>();
             List<JSONStringEntry> final_list = new List<JSONStringEntry>();
 
             foreach (JSONStringEntry entry in strings)
             {
-                
                 if (entry.Str.Length >= 3 && entry.Key.Contains('_'))
                 {
                     good_strings.Add(entry);
@@ -284,19 +308,19 @@ namespace HATE.Core
             {
                 //if (!string.IsNullOrWhiteSpace(s.Ending))
                 //{
-                    if (!stringDict.ContainsKey(s.Ending))
-                        stringDict[s.Ending] = new List<JSONStringEntry>();
+                if (!stringDict.ContainsKey(s.Ending))
+                    stringDict[s.Ending] = new List<JSONStringEntry>();
 
-                    stringDict[s.Ending].Add(s);
-                    totalStrings++;
+                stringDict[s.Ending].Add(s);
+                totalStrings++;
                 //}
             }
 
-            
 
             foreach (string ending in stringDict.Keys)
             {
-                logstream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
+                logstream.WriteLine(
+                    $"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
 
                 stringDict[ending].Shuffle(JSONSwapLoc, random);
 
@@ -314,14 +338,14 @@ namespace HATE.Core
                     char comma = (s.Key == final_list[final_list.Count - 1].Key) ? ' ' : ',';
                     writer.WriteLine($"\t\"{s.Key}\": \"{s.Str}\"{comma} ");
                 }
+
                 writer.Write("}\n");
                 writer.Flush();
             }
+
             logstream.WriteLine($"Closed {target_file}.");
 
-
             return false;
-
         }
-}
+    }
 }

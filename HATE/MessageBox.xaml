@@ -1,0 +1,58 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="HATE.MessageBox"
+        Background="Black"
+        MaxWidth="500"
+        Height="150"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight"
+        CanResize="False">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="Black" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Margin" Value="0,0,5,0" />
+        </Style>
+    </Window.Styles>
+    <Window.Content>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="gridImageAndMessage" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="5" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image x:Name="imgIcon" VerticalAlignment="Center" />
+                <TextBlock x:Name="labMessage" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="White" FontSize="12" TextWrapping="Wrap" />
+            </Grid>
+
+            <Rectangle Grid.Row="1" Fill="#141414" Margin="-5" />
+            <StackPanel Margin="5,5,0,5" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom" x:Name="Buttons">
+                <Button Click="ButtonClick" Content="Abort" x:Name="butAbort" IsVisible="False" BorderBrush="Red"
+                        Foreground="Red" />
+                <Button Click="ButtonClick" Content="Cancel" x:Name="butCancel" IsVisible="False"
+                        BorderBrush="OrangeRed" Foreground="OrangeRed" />
+                <Button Click="ButtonClick" Content="Ignore" x:Name="butIgnore" IsVisible="False" BorderBrush="Gray"
+                        Foreground="Gray" />
+                <Button Click="ButtonClick" Content="No" x:Name="butNo" IsVisible="False" BorderBrush="Red"
+                        Foreground="Red" />
+                <Button Click="ButtonClick" Content="OK" x:Name="butOK" IsVisible="False" BorderBrush="Green"
+                        Foreground="Green" />
+                <Button Click="ButtonClick" Content="Retry" x:Name="butRetry" IsVisible="False" BorderBrush="Orange"
+                        Foreground="Orange" />
+                <Button Click="ButtonClick" Content="Yes" x:Name="butYes" IsVisible="False" BorderBrush="Green"
+                        Foreground="Green" Margin="0" />
+            </StackPanel>
+        </Grid>
+    </Window.Content>
+</Window>

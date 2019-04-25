@@ -1,0 +1,108 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HATE.MainWindow"
+        Background="Black"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        Title="HATE">
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <!--<Setter Property="FontFamily" Value="Comic Sans MS"/>-->
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="StackPanel" x:Key="SwitchMargin">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </Window.Styles>
+    <StackPanel Margin="15,10" Orientation="Vertical">
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Current Game:"
+                       HorizontalAlignment="Left" FontSize="12" />
+            <TextBlock Margin="5,5,0,0" Text="Not found" x:Name="labGameName"
+                       HorizontalAlignment="Left" FontSize="16" Foreground="Yellow" />
+        </StackPanel>
+        <StackPanel Margin="0" Orientation="Vertical">
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleAudio"
+                          HorizontalAlignment="Left" Click="chbShuffleAudio_Toggled" />
+                <TextBlock Text="Shuffle Audio" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShuffleAudio" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleGFX" Click="chbShuffleGFX_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle GFX" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShuffleGFX" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleFonts" Click="chbShuffleFonts_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Fonts" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShuffleFonts" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbHitboxFix" Click="chbHitboxFix_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Hitbox Fix" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labHitboxFix" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleSprites" Click="chbShuffleSprites_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Sprites" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShuffleSprites" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleText" Click="chbShuffleText_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Text" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShuffleText" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbGarbleText" Click="chbGarbleText_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Garble Text" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labGarbleText" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShowSeed" Click="chbShowSeed_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Show Seed" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="20"
+                           x:Name="labShowSeed" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock FontSize="16" Margin="0,0,5,0" VerticalAlignment="Center" x:Name="labSeed" Text="Seed:" />
+                <TextBox Grid.Column="1"
+                         FontSize="16" x:Name="txtSeed" />
+                <TextBlock FontSize="16" VerticalAlignment="Center" x:Name="labPower" Text="Power:" Grid.Row="2"
+                           Margin="0,0,5,0" />
+                <TextBox FontSize="16" Grid.Row="2" Grid.Column="1" Watermark="0 - 255"
+                         x:Name="txtPower" Width="100" />
+            </Grid>
+        </StackPanel>
+        <StackPanel Margin="0,5,0,0" Orientation="Vertical">
+            <Button Content="-CORRUPT-"
+                    Background="Black" BorderBrush="Coral" Foreground="Coral" Margin="0,0,0,5" x:Name="btnCorrupt"
+                    Click="button_Corrupt_Clicked" />
+            <Button Content="-LAUNCH-"
+                    Background="Black" BorderBrush="Fuchsia" Foreground="Fuchsia" x:Name="btnLaunch"
+                    Click="btnLaunch_Clicked" />
+        </StackPanel>
+    </StackPanel>
+</Window>
