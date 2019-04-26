@@ -37,11 +37,11 @@ namespace HATE
             InitializeComponent();
         }
 
-        private void InitializeComponent()
+        private async void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
 
-            this.Icon = new WindowIcon(GetEmbeddedFile.GetFileStream("hateicon", "png").ConfigureAwait(false).GetAwaiter().GetResult());
+            this.Icon = new WindowIcon(await GetEmbeddedFile.GetFileStream("hateicon", "png"));
 
             //Set controls vars so we don't need to use this.FindControl every time we need to access a UI element
             btnCorrupt = this.FindControl<Button>("btnCorrupt");
@@ -92,7 +92,6 @@ namespace HATE
                     break;
             }
 
-            labGameName.FontFamily = font;
             labShuffleAudio.FontFamily = font;
             labShuffleGFX.FontFamily = font;
             labShuffleFonts.FontFamily = font;
@@ -101,11 +100,11 @@ namespace HATE
             labShuffleText.FontFamily = font;
             labGarbleText.FontFamily = font;
             labShowSeed.FontFamily = font;
+            txtSeed.FontFamily = font;
+            txtPower.FontFamily = font;
 
             labSeed.FontFamily = font2;
             labPower.FontFamily = font2;
-            txtSeed.FontFamily = font2;
-            txtPower.FontFamily = font2;
             btnLaunch.FontFamily = font2;
             btnCorrupt.FontFamily = font2;
 
@@ -565,6 +564,7 @@ namespace HATE
         {
             _shuffleAudio = chbShuffleAudio.IsChecked.Value;
             labShuffleAudio.Foreground = UIStyle.GetOptionColor(_shuffleAudio);
+            chbShuffleAudio.BorderBrush = labShuffleAudio.Foreground;
             UpdateCorrupt();
         }
 
@@ -572,6 +572,7 @@ namespace HATE
         {
             _shuffleGFX = chbShuffleGFX.IsChecked.Value;
             labShuffleGFX.Foreground = UIStyle.GetOptionColor(_shuffleGFX);
+            chbShuffleGFX.BorderBrush = labShuffleGFX.Foreground;
             UpdateCorrupt();
         }
 
@@ -579,6 +580,7 @@ namespace HATE
         {
             _shuffleFont = chbShuffleFonts.IsChecked.Value;
             labShuffleFonts.Foreground = UIStyle.GetOptionColor(_shuffleFont);
+            chbShuffleFonts.BorderBrush = labShuffleFonts.Foreground;
             UpdateCorrupt();
         }
 
@@ -586,6 +588,7 @@ namespace HATE
         {
             _hitboxFix = chbHitboxFix.IsChecked.Value;
             labHitboxFix.Foreground = UIStyle.GetOptionColor(_hitboxFix);
+            chbHitboxFix.BorderBrush = labHitboxFix.Foreground;
             UpdateCorrupt();
         }
 
@@ -593,6 +596,7 @@ namespace HATE
         {
             _shuffleBG = chbShuffleSprites.IsChecked.Value;
             labShuffleSprites.Foreground = UIStyle.GetOptionColor(_shuffleBG);
+            chbShuffleSprites.BorderBrush = labShuffleSprites.Foreground;
             UpdateCorrupt();
         }
 
@@ -600,6 +604,7 @@ namespace HATE
         {
             _shuffleText = chbShuffleText.IsChecked.Value;
             labShuffleText.Foreground = UIStyle.GetOptionColor(_shuffleText);
+            chbShuffleText.BorderBrush = labShuffleText.Foreground;
             UpdateCorrupt();
         }
 
@@ -607,13 +612,56 @@ namespace HATE
         {
             _garbleText = chbGarbleText.IsChecked.Value;
             labGarbleText.Foreground = UIStyle.GetOptionColor(_garbleText);
+            chbGarbleText.BorderBrush = labGarbleText.Foreground;
             UpdateCorrupt();
         }
 
         private void chbShowSeed_Toggled(object sender, RoutedEventArgs e)
         {
+            TextBlock thing = new TextBlock();
+            thing.PointerPressed += labPointerPressed;
             _showSeed = chbShowSeed.IsChecked.Value;
             labShowSeed.Foreground = UIStyle.GetOptionColor(_showSeed);
+            chbShowSeed.BorderBrush = labShowSeed.Foreground;
+        }
+
+        private void labPointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
+        {
+            switch (((TextBlock)sender).Name)
+            {
+                case "labGarbleText":
+                    chbGarbleText.IsChecked = !chbGarbleText.IsChecked;
+                    chbGarbleText.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labHitboxFix":
+                    chbHitboxFix.IsChecked = !chbHitboxFix.IsChecked;
+                    chbHitboxFix.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShowSeed":
+                    chbShowSeed.IsChecked = !chbShowSeed.IsChecked;
+                    chbShowSeed.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShuffleAudio":
+                    chbShuffleAudio.IsChecked = !chbShuffleAudio.IsChecked;
+                    chbShuffleAudio.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShuffleFonts":
+                    chbShuffleFonts.IsChecked = !chbShuffleFonts.IsChecked;
+                    chbShuffleFonts.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShuffleGFX":
+                    chbShuffleGFX.IsChecked = !chbShuffleGFX.IsChecked;
+                    chbShuffleGFX.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShuffleSprites":
+                    chbShuffleSprites.IsChecked = !chbShuffleSprites.IsChecked;
+                    chbShuffleSprites.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+                case "labShuffleText":
+                    chbShuffleText.IsChecked = !chbShuffleText.IsChecked;
+                    chbShuffleText.RaiseEvent(new RoutedEventArgs(CheckBox.ClickEvent));
+                    break;
+            }
         }
     }
 }

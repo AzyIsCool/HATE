@@ -6,7 +6,6 @@
         x:Class="HATE.MessageBox"
         Background="Black"
         MaxWidth="500"
-        Height="150"
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight"
         CanResize="False">
