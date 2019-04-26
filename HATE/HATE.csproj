@@ -11,24 +11,13 @@
     <AvaloniaResource Include="**\*.xaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
-    <AvaloniaResource Remove="HATE\**" />
-    <Compile Remove="HATE\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.0" />
     <PackageReference Include="Avalonia.Desktop" Version="0.8.0" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Remove="HATE\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="HATE\**" />
     <None Remove="HATE.log" />
-    <None Remove="hateicon.png" />
-    <None Remove="Images\alert-circle-outline.png" />
-    <None Remove="Images\alert.png" />
-    <None Remove="Images\help-circle-outline.png" />
-    <None Remove="Images\information-outline.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hateicon.png" />
@@ -36,6 +25,7 @@
     <EmbeddedResource Include="Images\alert.png" />
     <EmbeddedResource Include="Images\help-circle-outline.png" />
     <EmbeddedResource Include="Images\information-outline.png" />
+    <EmbeddedResource Include="hateicon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HATE.Core\HATE.Core.csproj" />

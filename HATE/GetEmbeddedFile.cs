@@ -41,10 +41,10 @@ namespace HATE
             string returnString = ThisAssemblyEntryPoint;
             foreach (var s in fileStructure)
             {
-                ThisAssemblyEntryPoint += $".{s}";
+                returnString += $".{s}";
             }
 
-            return returnString != ThisAssemblyEntryPoint ? ThisAssemblyEntryPoint.Replace("-", "_") : null;
+            return returnString.Replace("-", "_");
         }
     }
 }
