@@ -44,7 +44,7 @@ namespace HATE
                 returnString += $".{s}";
             }
 
-            return returnString.Replace("-", "_");
+            return returnString;
         }
     }
 }

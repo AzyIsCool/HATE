@@ -340,7 +340,7 @@ namespace HATE
             }
             catch (Exception)
             {
-                Logger.Log(MessageType.Error, $"Unable to launch {labGameName.Text}");
+                Logger.Log(MessageType.Error, $"Unable to launch '{labGameName.Text}'");
             }
 
             EnableControls(true);
