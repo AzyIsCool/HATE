@@ -6,7 +6,7 @@ namespace HATE.Core
     public class OS
     {
         //Code from https://stackoverflow.com/questions/38790802/determine-operating-system-in-net-core
-        //Was needed because what we get isn't the best when using .NET Standard (only shows if we are on windows or Unix (which could be macOS or Linix))
+        //Was needed because what we get isn't the best when using .NET Standard (only shows if we are on windows or Unix (which could be macOS or Linux))
         public static OperatingSystem WhatOperatingSystemUserIsOn
         {
             get

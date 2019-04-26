@@ -1,7 +1,6 @@
 ﻿using System;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Path = System.IO.Path;
 using Avalonia.Media.Imaging;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace HATE
         {
             AvaloniaXamlLoader.Load(this);
 
-            this.Icon = new WindowIcon("hateicon.png");
+            this.Icon = new WindowIcon(GetEmbeddedFile.GetFileStream("hateicon", "png").ConfigureAwait(false).GetAwaiter().GetResult());
             labMessage = this.FindControl<TextBlock>("labMessage");
             butNo = this.FindControl<Button>("butNo");
             butOK = this.FindControl<Button>("butOK");
@@ -35,7 +34,7 @@ namespace HATE
             Setup(messageBoxOptions);
         }
 
-        private void Setup(MessageBoxOptions messageBoxOptions)
+        private async void Setup(MessageBoxOptions messageBoxOptions)
         {
             labMessage.Text = messageBoxOptions.Message;
 
@@ -77,16 +76,16 @@ namespace HATE
                 switch ((int) messageBoxOptions.Icon)
                 {
                     case 64:
-                        imgIcon.Source = new Bitmap(Path.Combine("Images", "information-outline.png"));
+                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
                         break;
                     case 48:
-                        imgIcon.Source = new Bitmap(Path.Combine("Images", "alert.png"));
+                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("alert", "png", "Images"));
                         break;
                     case 16:
-                        imgIcon.Source = new Bitmap(Path.Combine("Images", "alert-circle-outline.png"));
+                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("alert-circle-outline", "png", "Images"));
                         break;
                     case 32:
-                        imgIcon.Source = new Bitmap(Path.Combine("Images", "information-outline.png"));
+                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
                         break;
                 }
             }

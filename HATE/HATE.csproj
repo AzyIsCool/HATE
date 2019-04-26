@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ApplicationIcon>hateicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">
@@ -23,6 +24,18 @@
   <ItemGroup>
     <None Remove="HATE\**" />
     <None Remove="HATE.log" />
+    <None Remove="hateicon.png" />
+    <None Remove="Images\alert-circle-outline.png" />
+    <None Remove="Images\alert.png" />
+    <None Remove="Images\help-circle-outline.png" />
+    <None Remove="Images\information-outline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hateicon.png" />
+    <EmbeddedResource Include="Images\alert-circle-outline.png" />
+    <EmbeddedResource Include="Images\alert.png" />
+    <EmbeddedResource Include="Images\help-circle-outline.png" />
+    <EmbeddedResource Include="Images\information-outline.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HATE.Core\HATE.Core.csproj" />

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace HATE.Core
@@ -10,7 +10,6 @@ namespace HATE.Core
     {
         public const int WordSize = 4;
         public const int NumDataSegments = 25;
-
 
         public static bool LoadDataAndFind(string seeked_header, Random random, float shufflechance,
             StreamWriter logstream, string resource_file,

@@ -14,6 +14,4 @@ All instructions are inside the README file in the download.
 
 # Building
 
-You will need [GTK# for .NET](https://www.mono-project.com/download/stable/) and .NET or mono in order to build
-
-
+You need .Net Core 2.2 in order to build, Rider or Visual Studio 2017/2019 is recommended when editing the code

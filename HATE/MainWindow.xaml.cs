@@ -9,7 +9,6 @@ using System.Diagnostics;
 using Avalonia.Markup.Xaml;
 using System.Threading.Tasks;
 using Avalonia.Interactivity;
-using Avalonia.Styling;
 
 namespace HATE
 {
@@ -42,7 +41,7 @@ namespace HATE
         {
             AvaloniaXamlLoader.Load(this);
 
-            this.Icon = new WindowIcon("hateicon.png");
+            this.Icon = new WindowIcon(GetEmbeddedFile.GetFileStream("hateicon", "png").ConfigureAwait(false).GetAwaiter().GetResult());
 
             //Set controls vars so we don't need to use this.FindControl every time we need to access a UI element
             btnCorrupt = this.FindControl<Button>("btnCorrupt");
