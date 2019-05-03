@@ -6,20 +6,54 @@ using System.Threading.Tasks;
 
 namespace HATE
 {
-    partial class MessageBox : Window
+    internal partial class MessageBox : UserControl
     {
-        private MessageResult Result { get; set; }
+        public enum MessageButton
+        {
+            AbortRetryIgnore = 2,
+            OK = 0,
+            OKCancel = 1,
+            RetryCancel = 5,
+            YesNo = 4,
+            YesNoCancel = 3
+        }
+
+        public enum MessageIcon
+        {
+            Asterisk = 64,
+            Error = 16,
+            Exclamation = 48,
+            Hand = 16,
+            Information = 64,
+            None = 0,
+            Question = 32,
+            Stop = 16,
+            Warning = 48
+        }
+
+        public enum MessageResult
+        {
+            Abort = 3,
+            Cancel = 2,
+            Ignore = 5,
+            No = 7,
+            None = 0,
+            OK = 1,
+            Retry = 4,
+            Yes = 6
+        }
 
         private MessageBox(MessageBoxOptions messageBoxOptions)
         {
             InitializeComponent(messageBoxOptions);
         }
 
+        private MessageResult Result { get; set; }
+
         private void InitializeComponent(MessageBoxOptions messageBoxOptions)
         {
             AvaloniaXamlLoader.Load(this);
 
-            this.Icon = new WindowIcon(GetEmbeddedFile.GetFileStream("hateicon", "png").ConfigureAwait(false).GetAwaiter().GetResult());
             labMessage = this.FindControl<TextBlock>("labMessage");
             butNo = this.FindControl<Button>("butNo");
             butOK = this.FindControl<Button>("butOK");
@@ -70,22 +104,26 @@ namespace HATE
             if ((int) messageBoxOptions.Icon == 0)
             {
                 gridImageAndMessage.ColumnDefinitions[0].Width = new GridLength(0, GridUnitType.Pixel);
+                imgIcon.IsVisible = false;
             }
             else
             {
                 switch ((int) messageBoxOptions.Icon)
                 {
                     case 64:
-                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
+                        imgIcon.Source =
+                            new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
                         break;
                     case 48:
                         imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("alert", "png", "Images"));
                         break;
                     case 16:
-                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("alert-circle-outline", "png", "Images"));
+                        imgIcon.Source =
+                            new Bitmap(await GetEmbeddedFile.GetFileStream("alert-circle-outline", "png", "Images"));
                         break;
                     case 32:
-                        imgIcon.Source = new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
+                        imgIcon.Source =
+                            new Bitmap(await GetEmbeddedFile.GetFileStream("information-outline", "png", "Images"));
                         break;
                 }
             }
@@ -94,14 +132,16 @@ namespace HATE
         private static async Task<MessageResult> _Show(string message, MessageButton messageButton,
             MessageIcon messageIcon, string title, Window window)
         {
-            var messageBox = new MessageBox(new MessageBoxOptions()
+            var messageBox = new MessageBox(new MessageBoxOptions
             {
                 Title = title,
                 Message = message,
                 Icon = messageIcon,
                 Buttons = messageButton
             });
-            await messageBox.ShowDialog(window);
+            messageBox.OwnerWindow = new MainWindow(messageBox);
+            messageBox.OwnerWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            await messageBox.OwnerWindow.ShowDialog(window);
             return messageBox.Result;
         }
 
@@ -145,50 +185,15 @@ namespace HATE
                     break;
             }
 
-            Close();
-        }
-
-        public enum MessageResult
-        {
-            Abort = 3,
-            Cancel = 2,
-            Ignore = 5,
-            No = 7,
-            None = 0,
-            OK = 1,
-            Retry = 4,
-            Yes = 6
-        }
-
-        public enum MessageIcon
-        {
-            Asterisk = 64,
-            Error = 16,
-            Exclamation = 48,
-            Hand = 16,
-            Information = 64,
-            None = 0,
-            Question = 32,
-            Stop = 16,
-            Warning = 48
-        }
-
-        public enum MessageButton
-        {
-            AbortRetryIgnore = 2,
-            OK = 0,
-            OKCancel = 1,
-            RetryCancel = 5,
-            YesNo = 4,
-            YesNoCancel = 3
+            OwnerWindow.Close();
         }
 
         private class MessageBoxOptions
         {
-            public string Title;
-            public string Message;
             public MessageButton Buttons;
             public MessageIcon Icon;
+            public string Message;
+            public string Title;
         }
     }
 }

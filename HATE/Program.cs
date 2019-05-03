@@ -20,7 +20,11 @@ namespace HATE
         // container, etc.
         private static void AppMain(Application app, string[] args)
         {
-            app.Run(new MainWindow());
+            var mainPage = new MainPage();
+
+            var win = new MainWindow(mainPage, async () => await mainPage.OpenLogic());
+            mainPage.OwnerWindow = win;
+            app.Run(win);
         }
     }
 }

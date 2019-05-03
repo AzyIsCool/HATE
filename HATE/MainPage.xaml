@@ -1,0 +1,149 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="HATE.MainPage">
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="Width" Value="13" />
+            <Setter Property="Height" Value="13" />
+            <Setter Property="Background" Value="#141414" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}"
+                                CornerRadius="3"
+                                VerticalAlignment="Center">
+                            <Panel>
+                                <Path Name="checkMark"
+                                      Fill="{TemplateBinding BorderBrush}"
+                                      Width="11"
+                                      Height="10"
+                                      Stretch="Uniform"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Data="M 1145.607177734375,430 C1145.607177734375,430 1141.449951171875,435.0772705078125 1141.449951171875,435.0772705078125 1141.449951171875,435.0772705078125 1139.232177734375,433.0999755859375 1139.232177734375,433.0999755859375 1139.232177734375,433.0999755859375 1138,434.5538330078125 1138,434.5538330078125 1138,434.5538330078125 1141.482177734375,438 1141.482177734375,438 1141.482177734375,438 1141.96875,437.9375 1141.96875,437.9375 1141.96875,437.9375 1147,431.34619140625 1147,431.34619140625 1147,431.34619140625 1145.607177734375,430 1145.607177734375,430 z" />
+                                <Rectangle Name="indeterminateMark"
+                                           Fill="{TemplateBinding BorderBrush}"
+                                           Width="10"
+                                           Height="10"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Panel>
+                        </Border>
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          TextBlock.Foreground="{TemplateBinding Foreground}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                          Grid.Column="1" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="StackPanel" x:Key="SwitchMargin">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Margin="15,10" Orientation="Vertical" Grid.Row="1">
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Current Game:"
+                       HorizontalAlignment="Left" FontSize="12" />
+            <TextBlock Margin="5,5,0,0" Text="Not found" x:Name="labGameName"
+                       HorizontalAlignment="Left" FontSize="16" Foreground="Yellow" />
+        </StackPanel>
+        <StackPanel Margin="0" Orientation="Vertical">
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleAudio"
+                          HorizontalAlignment="Left" Click="chbShuffleAudio_Toggled" />
+                <TextBlock Text="Shuffle Audio" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShuffleAudio" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleGFX" Click="chbShuffleGFX_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle GFX" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShuffleGFX" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleFonts" Click="chbShuffleFonts_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Fonts" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShuffleFonts" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbHitboxFix" Click="chbHitboxFix_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Hitbox Fix" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labHitboxFix" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleSprites" Click="chbShuffleSprites_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Sprites" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShuffleSprites" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShuffleText" Click="chbShuffleText_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Shuffle Text" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShuffleText" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbGarbleText" Click="chbGarbleText_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Garble Text" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labGarbleText" PointerPressed="labPointerPressed" />
+            </StackPanel>
+            <StackPanel Styles="{DynamicResource SwitchMargin}">
+                <CheckBox x:Name="chbShowSeed" Click="chbShowSeed_Toggled"
+                          HorizontalAlignment="Left" />
+                <TextBlock Text="Show Seed" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="18"
+                           x:Name="labShowSeed" PointerPressed="labPointerPressed" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock FontSize="14" Margin="0,0,5,0" VerticalAlignment="Center" x:Name="labSeed" Text="Seed:" />
+                <TextBox Grid.Column="1"
+                         FontSize="10" x:Name="txtSeed" FontWeight="Bold" Foreground="Black" MaxWidth="100" Width="100" />
+                <TextBlock FontSize="14" VerticalAlignment="Center" x:Name="labPower" Text="Power:" Grid.Row="2"
+                           Margin="0,0,5,0" />
+                <TextBox FontSize="10" Grid.Row="2" Grid.Column="1" Watermark="0 - 255"
+                         x:Name="txtPower" MaxWidth="100" Width="100" FontWeight="Bold" Foreground="Black" />
+            </Grid>
+        </StackPanel>
+        <StackPanel Margin="0,5,0,0" Orientation="Vertical">
+            <Button Content="-CORRUPT-"
+                    Background="Black" BorderBrush="Coral" Foreground="Coral" Margin="0,0,0,5" x:Name="btnCorrupt"
+                    Click="button_Corrupt_Clicked" FontWeight="Bold" FontSize="10" />
+            <Button Content="-LAUNCH-"
+                    Background="Black" BorderBrush="Fuchsia" Foreground="Fuchsia" x:Name="btnLaunch"
+                    Click="btnLaunch_Clicked" FontWeight="Bold" FontSize="10" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
