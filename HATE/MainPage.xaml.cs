@@ -2,7 +2,6 @@
 using Avalonia;
 using System.IO;
 using HATE.Core;
-using System.Linq;
 using Avalonia.Media;
 using HATE.Core.Logging;
 using Avalonia.Controls;
@@ -38,33 +37,12 @@ namespace HATE
             }
         }
 
-        private async void InitializeComponent()
+        private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+
             //Set controls vars so we don't need to use this.FindControl every time we need to access a UI element
-            btnCorrupt = this.FindControl<Button>("btnCorrupt");
-            btnLaunch = this.FindControl<Button>("btnLaunch");
-            chbShuffleText = this.FindControl<CheckBox>("chbShuffleText");
-            chbShuffleGFX = this.FindControl<CheckBox>("chbShuffleGFX");
-            chbHitboxFix = this.FindControl<CheckBox>("chbHitboxFix");
-            chbShuffleFonts = this.FindControl<CheckBox>("chbShuffleFonts");
-            chbShuffleSprites = this.FindControl<CheckBox>("chbShuffleSprites");
-            chbShuffleAudio = this.FindControl<CheckBox>("chbShuffleAudio");
-            chbShowSeed = this.FindControl<CheckBox>("chbShowSeed");
-            chbGarbleText = this.FindControl<CheckBox>("chbGarbleText");
-            labGameName = this.FindControl<TextBlock>("labGameName");
-            labShuffleAudio = this.FindControl<TextBlock>("labShuffleAudio");
-            labShuffleGFX = this.FindControl<TextBlock>("labShuffleGFX");
-            labShuffleFonts = this.FindControl<TextBlock>("labShuffleFonts");
-            labHitboxFix = this.FindControl<TextBlock>("labHitboxFix");
-            labShuffleSprites = this.FindControl<TextBlock>("labShuffleSprites");
-            labShuffleText = this.FindControl<TextBlock>("labShuffleText");
-            labGarbleText = this.FindControl<TextBlock>("labGarbleText");
-            labShowSeed = this.FindControl<TextBlock>("labShowSeed");
-            labPower = this.FindControl<TextBlock>("labPower");
-            labSeed = this.FindControl<TextBlock>("labSeed");
-            txtPower = this.FindControl<TextBox>("txtPower");
-            txtSeed = this.FindControl<TextBox>("txtSeed");
+            SetUpControls();
 
             FontFamily font = null;
             switch (OS.WhatOperatingSystemUserIsOn)
@@ -133,7 +111,7 @@ namespace HATE
             }
         }
 
-        public async Task OpenLogic()
+        public Task OpenLogic()
         {
             Logger.MessageHandle += Logger_SecondChange;
 
@@ -151,19 +129,23 @@ namespace HATE
             }
             else
             {
-                string game = Main.GetGame().Split('\\').Last().Replace(".exe", "");
+                string game = Path.GetFileNameWithoutExtension(Main.GetGame());
                 if (!string.IsNullOrWhiteSpace(game))
                 {
                     labGameName.Text = game;
                 }
 
                 if (!string.IsNullOrWhiteSpace(labGameName.Text))
+                {
                     Logger.Log(MessageType.Warning,
-                        $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main.DataFile} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.",
-                        true);
+                          $"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {Main.DataFile} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.",
+                          true);
+                }
                 else
+                {
                     Logger.Log(MessageType.Warning,
-                        "We couldn't find any game in this folder, check that this is in the right folder.");
+                       "We couldn't find any game in this folder, check that this is in the right folder.");
+                }
             }
 
             _random = new Random();
@@ -172,9 +154,9 @@ namespace HATE
 
             //this is so it doesn't keep starting the program over and over in case something messes up with becoming a elevated program in Windows (Linux and macOS don't need elevated permissions)
             if (Process.GetProcessesByName("HATE").Length == 1)
-            {
                 Task.Run(() => BecomeElevated()).ConfigureAwait(false);
-            }
+
+            return Task.CompletedTask;
         }
 
         private StreamWriter _logWriter;
@@ -193,34 +175,17 @@ namespace HATE
         private static readonly DateTime _unixTimeZero = new DateTime(1970, 1, 1);
         private Random _random;
 
-        public bool HasWriteAccess(string directory)
-        {
-            try
-            {
-                File.WriteAllText(Path.Combine(directory, "Wew"),
-                    "Wew this is just HATE checking if we can write and delete to the drive (if you see this delete the file if you want to, it will no ill effect on HATE :p)");
-                File.Delete(Path.Combine(directory, "Wew"));
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private async Task BecomeElevated()
         {
             if (File.Exists(Main.GetFileLocation(Main.DataFile)) &&
-                !HasWriteAccess(Main.GetFileLocation("Wew").Replace("/Wew", "")))
+                !Safe.HasWriteAccess(Main.GetFileLocation("Wew").Replace("/Wew", "")))
             {
                 if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows)
                 {
-                    var dialogResult = MessageBox
+                    var dialogResult = await MessageBox
                         .Show(
                             $"The game is in a protected folder and we need elevated permissions in order to mess with {Main.DataFile}, Do you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)",
-                            MessageBox.MessageButton.YesNo, MessageBox.MessageIcon.Exclamation, OwnerWindow)
-                        .ConfigureAwait(true).GetAwaiter().GetResult();
+                            MessageBox.MessageButton.YesNo, MessageBox.MessageIcon.Exclamation, OwnerWindow);
                     if (dialogResult == MessageBox.MessageResult.Yes)
                     {
                         //Restart program and run as admin
@@ -240,11 +205,9 @@ namespace HATE
                 }
                 else
                 {
-                    MessageBox.Show(
+                    await MessageBox.Show(
                             $"The game is in a protected folder and we need elevated permissions in order to mess with {Main.DataFile}. You need to open this with sudo (if you used a .sh file to open this make sure it says sudo ./HATE or linux and sudo ./HATE.app for macOS or if you opened this though terminal)",
-                            MessageBox.MessageButton.OK, MessageBox.MessageIcon.Exclamation, OwnerWindow)
-                        .ConfigureAwait(true)
-                        .GetAwaiter().GetResult();
+                            MessageBox.MessageButton.OK, MessageBox.MessageIcon.Exclamation, OwnerWindow);
                     Application.Current.Exit();
                 }
             }
@@ -252,6 +215,7 @@ namespace HATE
 
         private async void Logger_SecondChange(MessageEventArgs messageType)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             switch (messageType.MessageType)
             {
                 case MessageType.Debug when !messageType.WaitForAnything:
@@ -279,6 +243,7 @@ namespace HATE
                         MessageBox.MessageIcon.Error, OwnerWindow);
                     break;
             }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private string UseWine()
@@ -326,8 +291,7 @@ namespace HATE
                     RedirectStandardOutput = true
                 };
             }
-            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown
-            ) //Let try to load it like how we do with Windows, worst case is we'll get a Exception and fail to load it
+            else if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Unknown) //Let try to load it like how we do with Windows, worst case is we'll get a Exception and fail to load it
             {
                 processStartInfo = new ProcessStartInfo(Main.GetGame())
                 {
@@ -338,17 +302,27 @@ namespace HATE
 
             try
             {
-                Process.Start(processStartInfo);
+                var process = new Process
+                {
+                    StartInfo = processStartInfo,
+                    EnableRaisingEvents = true
+                };
+                process.Exited += Process_Exited;
+                process.Start();
             }
             catch (Exception)
             {
                 Logger.Log(MessageType.Error, $"Unable to launch '{labGameName.Text}'");
+                EnableControls(true);
             }
+        }
 
+        private void Process_Exited(object sender, EventArgs e)
+        {
             EnableControls(true);
         }
 
-        private void button_Corrupt_Clicked(object sender, EventArgs e)
+        private void btnCorrupt_Clicked(object sender, EventArgs e)
         {
             EnableControls(false);
 
@@ -406,17 +380,29 @@ namespace HATE
 
         private void EnableControls(bool state)
         {
-            btnCorrupt.IsEnabled = state;
-            btnLaunch.IsEnabled = state;
-            chbShuffleText.IsEnabled = state;
-            chbShuffleGFX.IsEnabled = state;
-            chbHitboxFix.IsEnabled = state;
-            chbShuffleFonts.IsEnabled = state;
-            chbShuffleSprites.IsEnabled = state;
-            chbShuffleAudio.IsEnabled = state;
-            chbShowSeed.IsEnabled = state;
-            txtPower.IsEnabled = state;
-            txtSeed.IsEnabled = state;
+            Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => 
+            {
+                btnCorrupt.IsEnabled = state;
+                btnLaunch.IsEnabled = state;
+                chbShuffleText.IsEnabled = state;
+                chbShuffleGFX.IsEnabled = state;
+                chbHitboxFix.IsEnabled = state;
+                chbShuffleFonts.IsEnabled = state;
+                chbShuffleSprites.IsEnabled = state;
+                chbShuffleAudio.IsEnabled = state;
+                chbShowSeed.IsEnabled = state;
+                chbGarbleText.IsEnabled = state;
+                labShuffleText.IsEnabled = state;
+                labShuffleGFX.IsEnabled = state;
+                labHitboxFix.IsEnabled = state;
+                labShuffleFonts.IsEnabled = state;
+                labShuffleSprites.IsEnabled = state;
+                labShuffleAudio.IsEnabled = state;
+                labShowSeed.IsEnabled = state;
+                labGarbleText.IsEnabled = state;
+                txtPower.IsEnabled = state;
+                txtSeed.IsEnabled = state;
+            });
         }
 
         private bool Setup()
@@ -489,14 +475,11 @@ namespace HATE
                         return false;
                     }
 
-                    ;
                     if (!Safe.CopyFile(Main.GetFileLocation(Path.Combine("lang", "lang_ja.json")),
                         Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_ja.json")))
                     {
                         return false;
                     }
-
-                    ;
                 }
 
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
@@ -539,7 +522,6 @@ namespace HATE
                     return false;
                 }
 
-                ;
                 _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
                 if (!Safe.CopyFile(Path.Combine(Directory.GetCurrentDirectory(), "Data", "lang", "lang_ja.json"),
                     Main.GetFileLocation(Path.Combine("lang", "lang_ja.json"))))
@@ -547,7 +529,6 @@ namespace HATE
                     return false;
                 }
 
-                ;
                 _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
             }
 
@@ -621,8 +602,6 @@ namespace HATE
 
         private void chbShowSeed_Toggled(object sender, RoutedEventArgs e)
         {
-            TextBlock thing = new TextBlock();
-            thing.PointerPressed += labPointerPressed;
             _showSeed = chbShowSeed.IsChecked.Value;
             labShowSeed.Foreground = UIStyle.GetOptionColor(_showSeed);
             chbShowSeed.BorderBrush = labShowSeed.Foreground;

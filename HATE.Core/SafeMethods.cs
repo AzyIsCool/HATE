@@ -24,6 +24,22 @@ namespace HATE.Core
             return true;
         }
 
+        public static bool HasWriteAccess(string directory)
+        {
+            try
+            {
+                File.WriteAllText(Path.Combine(directory, "Wew"),
+                    "Wew this is just HATE checking if we can write and delete to the drive (if you see this delete the file if you want to, it will no ill effect on HATE :p)");
+                File.Delete(Path.Combine(directory, "Wew"));
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static bool IsValidFile(string path)
         {
             return File.Exists(path);

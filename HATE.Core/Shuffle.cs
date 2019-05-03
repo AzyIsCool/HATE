@@ -120,11 +120,10 @@ namespace HATE.Core
             StreamWriter logstream)
         {
             byte[] readBuffer = new byte[WordSize];
-            int pointerNum = 0;
             List<ResourcePointer> pointerList = new List<ResourcePointer>();
 
             stream.Read(readBuffer, 0, WordSize);
-            pointerNum = BitConverter.ToInt32(readBuffer, 0);
+            int pointerNum = BitConverter.ToInt32(readBuffer, 0);
 
             for (int i = 0; i < pointerNum; i++)
             {
@@ -251,8 +250,6 @@ namespace HATE.Core
             {
                 StreamReader text_reader = new StreamReader(stream);
                 logstream.WriteLine($"Opened {resource_file}.");
-                long date = 0;
-
 
                 while (stream.Position != stream.Length)
                 {

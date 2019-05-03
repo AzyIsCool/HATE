@@ -279,46 +279,34 @@ namespace HATE.Core
                 var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
                 foreach (string s in files)
                 {
-                    if (OS.WhatOperatingSystemUserIsOn == OS.OperatingSystem.Windows &&
-                        !s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") ||
+                    if (!s.Contains("HATE.exe") && s.Contains(".exe") ||
                         s.Contains(".app"))
                     {
-                        int count = s.Length - 1;
-                        for (int i = 0; i < s.Length; i++)
-                        {
-                            if (s[i] == '\\')
-                            {
-                                count = i;
-                            }
-                        }
-
-                        return s.Remove(0, count + 1);
+                        return Path.GetFileName(s);
                     }
-                    else if (s != "HATE.exe" && s.Contains(".exe") || s.Contains(".app"))
-                        return s.Remove(0, s.LastIndexOf("/") + 1);
                 }
             }
 
             return "";
         }
 
-        //Need this because macOS does stuff differently so it's best if we work with the whole File Location String
+        //Need this because macOS does stuff differently so it's best if we work with the whole file location string
         public static string GetFileLocation(string file)
         {
             switch (OS.WhatOperatingSystemUserIsOn)
             {
                 case OS.OperatingSystem.Linux
                     when Safe.IsValidFile(Path.Combine(Directory.GetCurrentDirectory(), "assets", "options.ini")):
-                    return Path.Combine(Directory.GetCurrentDirectory(), "assets",
-                        file); //This means that it's running a native version of the game
+                    return Path.Combine(Directory.GetCurrentDirectory(), "assets", file); //This means that it's running a native version of the game
                 case OS.OperatingSystem.macOS:
                     return Path.Combine("/Applications", GetGame(), "Contents", "Resources", file);
                 case OS.OperatingSystem.Windows:
                 case OS.OperatingSystem.Unknown:
+                case OS.OperatingSystem.Linux:
                     return Path.Combine(Directory.GetCurrentDirectory(), file);
             }
 
-            return file; //In case it none of them somehow
+            return file; //In case it's none of them somehow
         }
 
         public static void DebugListChunks(string resource_file, StreamWriter logstream)

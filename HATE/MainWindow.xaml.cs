@@ -44,7 +44,6 @@ namespace HATE
 
         public void recDrag_Pressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
         {
-            Button button = new Button();
             this.BeginMoveDrag();
         }
 

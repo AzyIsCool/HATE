@@ -139,8 +139,10 @@ namespace HATE
                 Icon = messageIcon,
                 Buttons = messageButton
             });
-            messageBox.OwnerWindow = new MainWindow(messageBox);
-            messageBox.OwnerWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            messageBox.OwnerWindow = new MainWindow(messageBox)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             await messageBox.OwnerWindow.ShowDialog(window);
             return messageBox.Result;
         }
@@ -148,7 +150,7 @@ namespace HATE
         public static Task Show(string message, MessageIcon messageIcon, Window window,
             MessageButton messageButton = MessageButton.OKCancel, string title = "HATE")
         {
-            _Show(message, messageButton, messageIcon, title, window);
+            _ = _Show(message, messageButton, messageIcon, title, window);
             return Task.CompletedTask;
         }
 

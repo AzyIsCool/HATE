@@ -140,7 +140,7 @@
         <StackPanel Margin="0,5,0,0" Orientation="Vertical">
             <Button Content="-CORRUPT-"
                     Background="Black" BorderBrush="Coral" Foreground="Coral" Margin="0,0,0,5" x:Name="btnCorrupt"
-                    Click="button_Corrupt_Clicked" FontWeight="Bold" FontSize="10" />
+                    Click="btnCorrupt_Clicked" FontWeight="Bold" FontSize="10" />
             <Button Content="-LAUNCH-"
                     Background="Black" BorderBrush="Fuchsia" Foreground="Fuchsia" x:Name="btnLaunch"
                     Click="btnLaunch_Clicked" FontWeight="Bold" FontSize="10" />
